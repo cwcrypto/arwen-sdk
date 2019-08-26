@@ -1,6 +1,5 @@
 port = '5000'
 url = f'http://127.0.0.1:{port}/api/v1'
-
 testnetBTC = None
 testnetLTC = None
 testnetBCH = None
