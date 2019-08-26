@@ -39,7 +39,7 @@ class newUserEscrowRequest:
 class userEscrowDetails(baseDetails.escrowDetails):
     def __init__(self):
         self.escrowType = sf.EscrowType.USER
-        self.state = sf.State.OPENING
+        self.state = sf.EscrowState.OPENING
 
     def setFromNewEscrowResp(self, resp):
         self.escrowId = resp['userEscrowId']

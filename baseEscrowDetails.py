@@ -24,7 +24,7 @@ class escrowDetails:
     def setFromQuery(self, queryResponse):        
         self.escrowId = queryResponse[f'{self.escrowType.value}EscrowId']
         self.escrowAddress = queryResponse['escrowAddress']
-        self.state = sf.State(queryResponse['state'])
+        self.state = sf.EscrowState(queryResponse['state'])
         self.currency = sf.Blockchain(queryResponse[f'{self.escrowType.value}EscrowCurrency'])
         self.amount = float(queryResponse['amount'])
         self.availableToTrade = float(queryResponse['availableToTrade'])

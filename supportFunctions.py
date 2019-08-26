@@ -30,11 +30,18 @@ class Blockchain(enum.Enum):
     BCH = 'BCH'
     ETH = 'ETH'
 
-class State(enum.Enum):
+class EscrowState(enum.Enum):
     OPENING = 'OPENING'
     OPEN = 'OPEN'
     TRADING = 'TRADING'
     CLOSED = 'CLOSED'
+    UNKNOWN = 'UNKNOWN'
+
+class OrderState(enum.Enum):
+    OPEN = 'OPEN'
+    EXECUTED = 'EXECUTED'
+    CANCELD = 'CANCELED'
+    EXPIRED = 'EXPIRED'
     UNKNOWN = 'UNKNOWN'
 
 class Symbol(): 
@@ -42,6 +49,12 @@ class Symbol():
         self.quote = quoteCurrency # should be Blockchain
         self.base = baseCurrency # should be Blockchain
         self.separator = '-'
+
+    def fromString(self, sym):
+        b,q = sym.split('-')
+        self.quote = q
+        self.base = b
+        return self
 
     def toString(self):
         return f'{self.quote.value}{self.separator}{self.base.value}'
@@ -56,10 +69,10 @@ def generateEscrowTimelock(days):
 
 def waitForEscowToOpen(escrow):
 
-    if(escrow.state == State.CLOSED or escrow.state == State.UNKNOWN):
+    if(escrow.state == EscrowState.CLOSED or escrow.state == EscrowState.UNKNOWN):
         return False
 
-    while(escrow.state != State.OPEN):
+    while(escrow.state != EscrowState.OPEN):
         escrow.updateEscrowDetails()
         print('Waiting 60 seconds before next poll...')
         time.sleep(60)
