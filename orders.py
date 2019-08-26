@@ -9,38 +9,37 @@ class orderDetails:
 
         self.userEscrowId = None
         self.exchEscrowId = None
-        self.type = sf.OrderType.rfq
+        self.type = sf.OrderType.RFQ
         self.side = None
-        self.symbol = None
+        self.symbol = None          # Not strictly necessary
         self.buyQty = None
         self.sellQty = None
-        self.timeInForce = sf.timeInForce.fok
-        self.price = None
+        self.timeInForce = sf.timeInForce.FOK
+        self.price = None           # Not used at the moment
         self.timeCreated = None
         self.timeExpiry = None
         self.timeClosed = None
 
-    def createOrder(self, userEscrow, exchEscrow, qty, side):
+    def setupOrder(self, userEscrow, exchEscrow, qty, side):
 
         if not isinstance(side, sf.Side):
             raise TypeError('Invalid Side')
 
-        self.userEscrowId = userEscrow.userEscrowId
-        self.exchEscrowId = exchEscrow.exchEscrowId
-        self.qty = str(qty)
+        self.userEscrowId = userEscrow.escrowId
+        self.exchEscrowId = exchEscrow.escrowId
+        self.qty = qty
         self.side = side
-        self.symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency).toString()
+        self.symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency)
 
     def getRequest(self):
         self.params['userEscrowId'] = self.userEscrowId
         self.params['exchEscrowId'] = self.exchEscrowId
-        self.params['qty'] = self.qty
-        self.params['side'] = self.side.value # notice enum assignment here
-        self.params['symbol'] = self.symbol
+        self.params['qty'] = str(self.qty)
+        self.params['side'] = self.side.value
+        self.params['symbol'] = self.symbol.toString()
 
         return self.params
         
-
     # Build this after query endpoint is done
     def setFromQuery(self, resp):
         raise NotImplementedError('Please map resp to self.details')
@@ -51,8 +50,8 @@ class orderDetails:
         self.buyQty = float(quote['buyQty'])
         self.sellQty = float(quote['sellQty'])
         self.price = float(self.buyQty / self.sellQty)
-        self.buyCurrency = sf.Blockchain.FromString(quote['buyCurrency'])
-        self.sellCurrency = sf.Blockchain.FromString(quote['sellCurrency'])
+        self.buyCurrency = sf.Blockchain(quote['buyCurrency'])
+        self.sellCurrency = sf.Blockchain(quote['sellCurrency'])
 
 
     def getOrderQuery(self, oid = None):
@@ -98,7 +97,7 @@ class priceInquiry():
         self.sellQty = response['sellQty']
 
 
-def historyUserEscrows(startTime = None):
+def ordersHistory(startTime = None):
 
     endpoint = '/orders/history'
 
@@ -125,7 +124,7 @@ def sellTrade(userEscrow, exchEscrow, qty):
     endpoint = '/orders/quote'
 
     order = orderDetails()
-    order.createOrder(userEscrow, exchEscrow, qty, sf.Side.SELL)
+    order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.SELL)
     resp = sf.sendRequest(c.url, endpoint, order.getRequest())
     order.updateOrderFromQuote(resp)
     
@@ -137,7 +136,7 @@ def buyTrade(userEscrow, exchEscrow, qty):
     endpoint = '/orders/quote'
 
     order = orderDetails()
-    order.createOrder(userEscrow, exchEscrow, qty, sf.Side.BUY)
+    order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.BUY)
     resp = sf.sendRequest(c.url, endpoint, order.getRequest())
     order.updateOrderFromQuote(resp)
     

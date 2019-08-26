@@ -4,6 +4,12 @@ import enum
 import time
 
 import constants as c
+import baseEscrowDetails as baseDetails
+
+
+class EscrowType(enum.Enum): 
+    USER = 'user'
+    EXCH = 'exch'
 
 class Side(enum.Enum): 
     BUY = 'BUY'
@@ -12,37 +18,24 @@ class Side(enum.Enum):
 class Exchange(enum.Enum): 
     BINONCE = 'Binonce'
 
+class OrderType(enum.Enum): 
+    RFQ = 'RFQ'
+
+class timeInForce(enum.Enum):
+    FOK = 'FOK'
+
 class Blockchain(enum.Enum): 
     BTC = 'BTC'
     LTC = 'LTC'
     BCH = 'BCH'
     ETH = 'ETH'
 
-    @staticmethod
-    def FromString(currency):
-        for b in Blockchain:
-            if(b.value.lower == currency.lower):
-                return b
-
-
 class State(enum.Enum):
-    OPEN = 'OPEN'
     OPENING = 'OPENING'
+    OPEN = 'OPEN'
+    TRADING = 'TRADING'
     CLOSED = 'CLOSED'
     UNKNOWN = 'UNKNOWN'
-
-    @staticmethod
-    def FromString(state):
-        for s in State:
-            if(s.value.lower == state.lower):
-                return s
-
-class OrderType(enum.Enum): 
-    rfq = 'RFQ'
-
-class timeInForce(enum.Enum):
-    fok = 'FOK'
-
 
 class Symbol(): 
     def __init__(self, quoteCurrency, baseCurrency):
@@ -53,11 +46,25 @@ class Symbol():
     def toString(self):
         return f'{self.quote.value}{self.separator}{self.base.value}'
 
+
 def generateEscrowTimelock(days):
     if(days < 1.0):
-        raise AttributeError('timelock can not be less than 1 day', days)
+        raise AttributeError('Timelock can not be less than 1 day', days)
 
     return int(time.time() + (24 * 60 * 60 * days) + 10)
+
+
+def waitForEscowToOpen(escrow):
+
+    if(escrow.state == State.CLOSED or escrow.state == State.UNKNOWN):
+        return False
+
+    while(escrow.state != State.OPEN):
+        escrow.updateEscrowDetails()
+        print('Waiting 60 seconds before next poll...')
+        time.sleep(60)
+
+    return True
 
 
 def sendRequest(url, endpoint, params = None):
@@ -65,4 +72,9 @@ def sendRequest(url, endpoint, params = None):
     if(params == None):
         params = dict()
 
-    return  json.loads(requests.post(f'{url}{endpoint}', json=params).text)
+    resp = requests.post(f'{url}{endpoint}', json=params).text
+
+    if(resp == None or resp == ''):
+        return None
+
+    return  json.loads(resp)
