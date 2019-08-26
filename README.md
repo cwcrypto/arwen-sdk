@@ -17,6 +17,9 @@ Close Arwen Client
 docker kill arwen
 ```
 
+API Documentation
+https://arwenclient.docs.apiary.io/
+
 Prerequisites:
  - [wget](https://www.gnu.org/software/wget/manual/wget.html)
  - python 3.6+
