@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     print('Creating a sell order of 0.01 BTC for LTC')
 
-    order = orders.sellTrade(ue, ee, 0.01)
+    order = orders.sellTrade(ue, ee, 0.0001)
     print('Order Details:')
     pprint.pprint(order)
 
