@@ -1,10 +1,13 @@
+__all__ = ['EscrowType', 'Side', 'Exchange', 'OrderType', 'TimeInForce', 'Blockchain', 'EscrowState', 'OrderState', 'Symbol', 'generateEscrowTimelock', 'waitForEscowToOpen']
+
+
 import requests 
 import json
 import enum
 import time
 
-import constants as c
-import baseEscrowDetails as baseDetails
+import arwenlib.ArwenClient as Arwen 
+import arwenlib.baseEscrowDetails as baseDetails
 
 
 class EscrowType(enum.Enum): 
@@ -21,7 +24,7 @@ class Exchange(enum.Enum):
 class OrderType(enum.Enum): 
     RFQ = 'RFQ'
 
-class timeInForce(enum.Enum):
+class TimeInForce(enum.Enum):
     FOK = 'FOK'
 
 class Blockchain(enum.Enum): 
@@ -67,27 +70,20 @@ def generateEscrowTimelock(days):
     return int(time.time() + (24 * 60 * 60 * days) + 10)
 
 
-def waitForEscowToOpen(escrow):
+def waitForEscowToOpen(escrow, client):
+
+    if not isinstance(client, Arwen.ArwenClient):
+        raise AttributeError('client passed is not an ArwenClient')
+    
+    if not isinstance(escrow, baseDetails.EscrowDetails):
+        raise AttributeError('invalid escrow object passed')
 
     if(escrow.state == EscrowState.CLOSED or escrow.state == EscrowState.UNKNOWN):
         return False
 
     while(escrow.state != EscrowState.OPEN):
-        escrow.updateEscrowDetails()
+        escrow = client.updateEscrowDetails(escrow)
         print('Waiting 60 seconds before next poll...')
         time.sleep(60)
 
     return True
-
-
-def sendRequest(url, endpoint, params = None):
-
-    if(params == None):
-        params = dict()
-
-    resp = requests.post(f'{url}{endpoint}', json=params).text
-
-    if(resp == None or resp == ''):
-        return None
-
-    return  json.loads(resp)

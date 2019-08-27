@@ -1,5 +1,6 @@
-import constants as c
-import supportFunctions as sf
+__all__ = ['orderDetails', 'priceInquiry']
+
+import arwenlib.supportFunctions as sf
 
 
 class orderDetails:
@@ -14,7 +15,7 @@ class orderDetails:
         self.symbol = None
         self.exchEscrowQty = None
         self.userEscrowQty = None
-        self.timeInForce = sf.timeInForce.FOK
+        self.timeInForce = sf.TimeInForce.FOK
         self.price = None           # Not used at the moment
         self.timeCreated = None
         self.timeExpiry = None
@@ -33,7 +34,6 @@ class orderDetails:
 
     def setFromOrderEscrowId(self, orderId):
         self.orderId = orderId
-        self.updateOrderDetails()
         return self
 
     def getRequest(self):
@@ -67,10 +67,6 @@ class orderDetails:
         self.timeCreated = int(query['timeCreated'])
         self.timeClosed = int(query['timeClosed'])
 
-    def updateOrderDetails(self):
-        orderUpdate = queryOrderDetails(self)
-        self.updateFromQuery(orderUpdate)
-
 
 class priceInquiry():
     def __init__(self, ue, ee, qty, side):
@@ -90,80 +86,4 @@ class priceInquiry():
         self.sellQty = response['sellQty']
 
 
-def ordersHistory(startTime = None):
 
-    endpoint = '/orders/history'
-
-    queryParams = dict()
-    queryParams['startTime'] = startTime
-
-    orderIdList = sf.sendRequest(c.url, endpoint, queryParams)
-
-    return orderIdList
-
-def queryOrderDetails(order):
-
-    endpoint = '/orders/details'
-
-    params = dict()
-    params['orderId'] = order.orderId
-
-    order.updateFromQuery(sf.sendRequest(c.url, endpoint, params))
-
-    return order
-
-def sellTrade(userEscrow, exchEscrow, qty):
-
-    endpoint = '/orders/quote'
-
-    order = orderDetails()
-    order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.SELL)
-    resp = sf.sendRequest(c.url, endpoint, order.getRequest())
-    order.updateOrderFromQuote(resp)
-    
-    return order
-
-
-def buyTrade(userEscrow, exchEscrow, qty):
-
-    endpoint = '/orders/quote'
-
-    order = orderDetails()
-    order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.BUY)
-    resp = sf.sendRequest(c.url, endpoint, order.getRequest())
-    order.updateOrderFromQuote(resp)
-    
-    return order
-
-def inquirePrice(userEscrow, exchEscrow, qty, side):
-
-    endpoint = '/orders/inquiry'
-
-    inquiry = priceInquiry(userEscrow, exchEscrow, qty, side)
-    resp = sf.sendRequest(c.url, endpoint, inquiry.getRequest())
-    inquiry.setFromInquiry(resp)
-    
-    return inquiry
-
-def execute(order):
-
-    endpoint = '/orders/execute'
-    
-    params = dict()
-    params['orderId'] = order.orderId
-
-    resp = sf.sendRequest(c.url, endpoint, params)
-
-    return resp['executed']
-
-
-def cancel(order):
-
-    endpoint = '/orders/cancel'
-    
-    params = dict()
-    params['orderId'] = order.orderId
-
-    resp = sf.sendRequest(c.url, endpoint, params)
-
-    return resp['canceled']

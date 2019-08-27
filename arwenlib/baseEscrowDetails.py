@@ -1,7 +1,10 @@
-import supportFunctions as sf
+__all__ = ['EscrowDetails', 'FiltersRequest']
+
+import arwenlib.supportFunctions as sf
+
 import constants as c
 
-class escrowDetails:
+class EscrowDetails:
     def __init__(self):
         self.escrowId = None
         self.escrowAddress = None
@@ -15,11 +18,6 @@ class escrowDetails:
         self.timeCreated = None
         self.timeClosed = None
         self.escrowType = None
-
-    def setFromEscrowId(self, escrowId):
-        self.escrowId = escrowId
-        self.updateEscrowDetails()
-        return self
 
     def setFromQuery(self, queryResponse):        
         self.escrowId = queryResponse[f'{self.escrowType.value}EscrowId']
@@ -42,39 +40,7 @@ class escrowDetails:
 
         return self
 
-    def updateEscrowDetails(self):
-        escrowUpdate = queryEscrows(self.escrowType, self.escrowId)[0]
-        self.setFromQuery(escrowUpdate)
-
-
-# Returns list of escrowDetails
-def queryEscrows(escrowType, escrowId = None, startTime = None, isOpen = True, limit = 1000, exchId = None):
-
-    if not isinstance(escrowType, sf.EscrowType):
-        raise AttributeError('escrowType must be assigned for queryEscrows()')
-
-    endpoint = f'/{escrowType.value}escrow/query'
-
-    queryParams = filtersRequest()
-    queryParams.setFilter(escrowType, escrowId, startTime, isOpen, limit, exchId)
-
-    escrowList = sf.sendRequest(c.url, endpoint, queryParams.getFilter())
-
-    return escrowList
-
-# Returns list of escrowIds
-def escrowHistory(escrowType, startTime = None):
-
-    endpoint = f'/{escrowType.value}escrow/history'
-
-    queryParams = dict()
-    queryParams['startTime'] = startTime
-
-    escrowIdList = sf.sendRequest(c.url, endpoint, queryParams)
-
-    return escrowIdList
-
-class filtersRequest:
+class FiltersRequest:
     def __init__(self):
         self.params = dict().fromkeys(['fromTime', 'isFinal', 'limit', 'exchId'])
     
