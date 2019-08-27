@@ -109,3 +109,4 @@ venv.bak/
 
 # public address ignore
 constants.py
+.vscode/
