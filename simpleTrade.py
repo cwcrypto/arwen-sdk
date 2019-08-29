@@ -19,12 +19,12 @@ if __name__ == "__main__":
     client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
 
     time = client.timeArwenClient()
-    print(f'ArwenClient time:{time.text}')
+    print(f'ArwenClient time:{time}')
 
     ping = client.pingArwenClient()
-    print(f'ArwenClient ping: {ping.text}')
+    print(f'ArwenClient ping: {ping}')
 
-    userEscrowId = 501
+    userEscrowId = 505
     exchEscrowId = 417
 
     ue = client.getEscrowById(sf.EscrowType.USER, userEscrowId)

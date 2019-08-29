@@ -16,29 +16,25 @@ if __name__ == "__main__":
     c.loadConfig()
     
     client = startArwenClient(ip=c.ip, port=c.port)
-    
 
     client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
 
-    # url = client.getOAuthUrl('kucoinrfq')['oauthUrl']
-    
-    # print('Please copy-paste the following URL into your browser')
-    # print('You will be shown a KuCoin OAuth page, log in ')
-    # print(url)
-
-    # exchInfo = client.exchanges()
-    # pprint.pprint(exchInfo)
-
-    register = client.registerApiKeys(apiKey=c.testnetApiKey, apiSecret=c.testnetApiSecret)
+    print('Registering API Key and Secret for testnet Binonce')
+    register = client.registerApiKeys(apiKey=c.testnetApiKey, apiSecret=c.testnetApiSecret, exchId=sf.Exchange.BINONCE)
     pprint.pprint(register)
 
-    print(c.testnetBTC)
+    print('Creating a new user escrow with the following parameters')
+    print(f'Reserve address from config file: {c.testnetBTC}')
+    print(f'exchId:     {sf.Exchange.BINONCE}')
+    print(f'currency    {sf.Blockchain.BTC.value}')
+    print(f'expire time:{sf.generateEscrowTimelock(2.0)} // 2 days from now')
+    print(f'qty:        {0.025}\n')
 
     newUE = client.createNewUserEscrow(reserveAddress=c.testnetBTC)
     print('User Escrow (Unfunded)')
-    print(f'userEscrowId:    {newUE.escrowId}')
-    print(f'address to fund: {newUE.escrowAddress}')
-    print(f'amount to fund:  {newUE.amountToFund}')
+    print(f'userEscrowId:           {newUE.escrowId}')
+    print(f'escrow address to fund: {newUE.escrowAddress}')
+    print(f'amount to fund:         {newUE.amountToFund} {newUE.currency}')
 
     print('tradeBot will wait until escrow has been funded and confirmed by user')
     sf.waitForEscowToOpen(newUE, client)
@@ -47,11 +43,19 @@ if __name__ == "__main__":
     queryUE = client.queryEscrows(escrowType=sf.EscrowType.USER)
     pprint.pprint(queryUE)
 
+
+    print('Creating a new exchange escrow with the following parameters')
+    print(f'Reserve address from config file: {c.testnetLTC}')
+    print(f'exchId:     {sf.Exchange.BINONCE}')
+    print(f'currency    {sf.Blockchain.LTC.value}')
+    print(f'expire time:{sf.generateEscrowTimelock(2.0)} // 2 days from now')
+    print(f'qty:        {2.0}\n')
+
     newEE = client.createNewExchEscrow(reserveAddress=c.testnetLTC, userEscrow=newUE)
     print('Exchage Escrow (Funded by Exchage Automatically)')
-    print(f'exchEscrowId:    {newEE.escrowId}')
-    print(f'escrow address:  {newEE.escrowAddress}')
-    print(f'pricePaid:       {newEE.pricePaid}')
+    print(f'exchEscrowId:           {newEE.escrowId}')
+    print(f'funded escrow address:  {newEE.escrowAddress}')
+    print(f'pricePaid:              {newEE.pricePaid} {newUE.currency}')
 
     print('tradeBot will wait until escrow has been funded and confirmed by exchange')
     sf.waitForEscowToOpen(newEE, client)
@@ -60,5 +64,5 @@ if __name__ == "__main__":
     queryEE = client.queryEscrows(escrowType=sf.EscrowType.EXCH)
     pprint.pprint(queryEE)
 
-    print('Hooray! You have set up a user and exchange escrow!')
-    print('Write down your user and exchange escrowId and try the simpleBot script!')
+    print(f'Hooray! You have set up a user (escrowId {newUE.escrowId}) and exchange (escrowId {newEE.escrowId}) escrow!')
+    print('Write down your user and exchange escrowId and try the simpleTrade script!')

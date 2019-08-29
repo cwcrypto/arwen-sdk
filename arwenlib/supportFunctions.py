@@ -19,7 +19,13 @@ class Side(enum.Enum):
     SELL = 'SELL'
 
 class Exchange(enum.Enum): 
-    BINONCE = 'Binonce'
+    # Testnet
+    BINONCE = 'Binonce' 
+    TRACKEN = 'Tracken'
+    COINBOSS = 'Coinboss'
+    ROLONIEX = 'Roloniex'
+    BITFINESSE = 'Bitfinesse'
+    # Mainnet
     KUCOIN = 'kucoinrfq'
 
 class OrderType(enum.Enum): 
