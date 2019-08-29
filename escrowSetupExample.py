@@ -9,10 +9,14 @@ from arwenlib import supportFunctions as sf
 
 from arwenlib import startArwenClient
 
-import constants as c
+import constants
 
 if __name__ == "__main__":
-    client = startArwenClient()
+    c = constants.ArwenConfig()
+    c.loadConfig()
+    
+    client = startArwenClient(ip=c.ip, port=c.port)
+    
 
     client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
 
@@ -22,14 +26,15 @@ if __name__ == "__main__":
     # print('You will be shown a KuCoin OAuth page, log in ')
     # print(url)
 
-    exchInfo = client.exchanges()
-    pprint.pprint(exchInfo)
+    # exchInfo = client.exchanges()
+    # pprint.pprint(exchInfo)
 
-    register = client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
+    register = client.registerApiKeys(apiKey=c.testnetApiKey, apiSecret=c.testnetApiSecret)
     pprint.pprint(register)
 
+    print(c.testnetBTC)
 
-    newUE = client.createNewUserEscrow(c.testnetBTC)
+    newUE = client.createNewUserEscrow(reserveAddress=c.testnetBTC)
     print('User Escrow (Unfunded)')
     print(f'userEscrowId:    {newUE.escrowId}')
     print(f'address to fund: {newUE.escrowAddress}')
@@ -39,10 +44,10 @@ if __name__ == "__main__":
     sf.waitForEscowToOpen(newUE, client)
 
     print('All user escrows that are not closed:')
-    queryUE = client.queryEscrows(sf.EscrowType.USER)
+    queryUE = client.queryEscrows(escrowType=sf.EscrowType.USER)
     pprint.pprint(queryUE)
 
-    newEE = client.createNewExchEscrow(c.testnetLTC, userEscrow=newUE)
+    newEE = client.createNewExchEscrow(reserveAddress=c.testnetLTC, userEscrow=newUE)
     print('Exchage Escrow (Funded by Exchage Automatically)')
     print(f'exchEscrowId:    {newEE.escrowId}')
     print(f'escrow address:  {newEE.escrowAddress}')
@@ -52,7 +57,7 @@ if __name__ == "__main__":
     sf.waitForEscowToOpen(newEE, client)
 
     print('All exch escrows that are not closed:')
-    queryEE = client.queryEscrows(sf.EscrowType.EXCH)
+    queryEE = client.queryEscrows(escrowType=sf.EscrowType.EXCH)
     pprint.pprint(queryEE)
 
     print('Hooray! You have set up a user and exchange escrow!')

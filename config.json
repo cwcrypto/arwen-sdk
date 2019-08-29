@@ -4,6 +4,9 @@
     "testnetBTC": "",
     "testnetLTC": "",
     "testnetBCH": "",
-    "testnetApiKet": "test-api-key",
-    "testnetApiSecret": "+3F/lqPD2TgkG5hzFFlqypf+8Mpt8l6Zg5vsyUNCl7T3T4FGYQm5faRoq56CKSpIEp8hp0pDTSGjU4OIa4uAhvQlTctBGjfRwkoLQOJDT+NWzZMbvU6e2jULV4BWZzgP47VVFpq3cocyZ8dHoC+V6VYFDXV9aJJx8rwcy0+Rhl4="
+    "testnetApiKey": "test-api-key",
+    "testnetApiSecret": "+3F/lqPD2TgkG5hzFFlqypf+8Mpt8l6Zg5vsyUNCl7T3T4FGYQm5faRoq56CKSpIEp8hp0pDTSGjU4OIa4uAhvQlTctBGjfRwkoLQOJDT+NWzZMbvU6e2jULV4BWZzgP47VVFpq3cocyZ8dHoC+V6VYFDXV9aJJx8rwcy0+Rhl4=",
+    "mainnetBTC": "",
+    "mainnetLTC": "",
+    "mainnetBCH": ""
 }

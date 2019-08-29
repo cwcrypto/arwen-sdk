@@ -8,10 +8,13 @@ from arwenlib import supportFunctions as sf
 
 from arwenlib import startArwenClient
 
-import constants as c
+import constants
 
 if __name__ == "__main__":
-    client = startArwenClient()
+    c = constants.ArwenConfig()
+    c.loadConfig()
+
+    client = startArwenClient(c.ip, c.port)
 
     client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
 

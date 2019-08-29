@@ -1,15 +1,42 @@
 # tradeBot
-Python3 trading bot example for interacting with arwen-api
+Python3 trading example for interacting with arwen-api
 
-Download and install arwen-api: `download_and_install.sh`
+Prerequisites:
+ - [wget](https://www.gnu.org/software/wget/manual/wget.html)
+ - [python 3.6+](https://www.python.org/downloads/)
+ - [Docker](https://hub.docker.com/)
 
-Start the docker image: `start_api.sh`
 
-Run the tradeBot:
+Download and install arwen-api: 
+
+```
+./download_and_install.sh
+```
+
+Start the docker image: 
+
+```
+start_api.sh
+```
+
+
+General trading flow:
+ - Open and fund user and exchange escrows for the currencies you want to trade in, keeping in mind that you can only trade from a user escrow to an exchange escrow
+ - Trade between user and exchange escrows
+ - Close escrows for a fee rebate
+
+Escrow Setup Example:
+
+```
+python escrowSetupExample.py
+```
+
+Take the user and exchange escrow ids from the previous script and edit them into simpleTrade.py then run it
 
 ```
 python simpleBot.py
 ```
+
 
 Close Arwen Client
 
@@ -20,10 +47,6 @@ docker kill arwen
 API Documentation
 https://arwenclient.docs.apiary.io/
 
-Prerequisites:
- - [wget](https://www.gnu.org/software/wget/manual/wget.html)
- - python 3.6+
- - Docker
 
 Notes:
  - For python, please create a virtual environment with the [requirements](./reqs.txt) installed
