@@ -34,11 +34,11 @@ class ArwenClient():
 
 
     def pingArwenClient(self):
-        return requests.get(f'{self.url}/ping')
+        return requests.get(f'{self.url}/ping').text
 
 
     def timeArwenClient(self):
-        return requests.get(f'{self.url}/time')
+        return requests.get(f'{self.url}/time').text
 
 
     def cleanupBadEscrows(self):
@@ -57,12 +57,30 @@ class ArwenClient():
 
     def registerApiKeys(self, apiKey, apiSecret, exchId='Binonce'):
 
-        endpoint = '/register'
+        endpoint = '/kyc/register'
 
         reqParams = dict()
         reqParams['exchId'] = exchId
         reqParams['apiKey'] = apiKey
         reqParams['apiSecret'] = apiSecret
+
+        return self.sendRequest(endpoint, reqParams)
+
+    def getOAuthUrl(self, exchId='Binonce'):
+
+        endpoint = '/kyc/oauth'
+
+        reqParams = dict()
+        reqParams['exchId'] = exchId
+
+        return self.sendRequest(endpoint, reqParams)
+
+    def getKycStatus(self, exchId='Binonce'):
+
+        endpoint = '/kyc/status'
+
+        reqParams = dict()
+        reqParams['exchId'] = exchId
 
         return self.sendRequest(endpoint, reqParams)
 

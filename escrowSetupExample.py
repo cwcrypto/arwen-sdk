@@ -14,6 +14,14 @@ import constants as c
 if __name__ == "__main__":
     client = startArwenClient()
 
+    client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)
+
+    # url = client.getOAuthUrl('kucoinrfq')['oauthUrl']
+    
+    # print('Please copy-paste the following URL into your browser')
+    # print('You will be shown a KuCoin OAuth page, log in ')
+    # print(url)
+
     exchInfo = client.exchanges()
     pprint.pprint(exchInfo)
 

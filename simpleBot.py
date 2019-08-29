@@ -3,18 +3,14 @@ import json
 import math
 import pprint
 
-import arwenlib.supportFunctions as sf
-import arwenlib.baseEscrowDetails as baseDetails
-import arwenlib.userEscrow as userEscrow
-import arwenlib.exchEscrow as exchEscrow
-import arwenlib.orders as orders
+from arwenlib import ArwenClient as Arwen
+from arwenlib import supportFunctions as sf
+
 from arwenlib import startArwenClient
 
 import constants as c
 
 if __name__ == "__main__":
-    
-    # Login and register API keys
     client = startArwenClient()
 
     client.registerApiKeys(c.testnetApiKey, c.testnetApiSecret)

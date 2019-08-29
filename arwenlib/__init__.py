@@ -1,7 +1,17 @@
 __author__ = 'Nabeel Younis for Arwen Secure'
 __name__ = 'arwenlib'
 
-__all__ = ['ArwenClient', 'startArwenClient','baseEscrowDetails', 'exchEscrow', 'orders', 'supportFunctions', 'transactions', 'userEscrow']
+__all__ = [
+    'startArwenClient',
+    'ArwenClient',
+    'baseEscrowDetails',
+    'escrowRequests',
+    'exchEscrow',
+    'orders',
+    'supportFunctions',
+    'transactions',
+    'userEscrow'
+    ]
 
 
 def startArwenClient(ip='127.0.0.1', port='5000'):

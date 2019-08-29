@@ -20,6 +20,7 @@ class Side(enum.Enum):
 
 class Exchange(enum.Enum): 
     BINONCE = 'Binonce'
+    KUCOIN = 'kucoinrfq'
 
 class OrderType(enum.Enum): 
     RFQ = 'RFQ'
