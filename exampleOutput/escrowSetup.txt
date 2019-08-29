@@ -1,0 +1,123 @@
+Registering API Key and Secret for testnet Binonce
+{'status': 'True'}
+Creating a new user escrow with the following parameters
+Reserve address from config file: tb1q7dmslhumu9hk96ukee44da7807w82ue4kud58w
+exchId:     Exchange.BINONCE
+currency    BTC
+expire time:1567267415 // 2 days from now
+qty:        0.025
+
+User Escrow (Unfunded)
+userEscrowId:           507
+escrow address to fund: 2N9EZX4aH2M2eT3fz8MQd2qgxiANAReUAL2
+amount to fund:         0.02500846 Blockchain.BTC
+tradeBot will wait until escrow has been funded and confirmed by user
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+All user escrows that are not closed:
+[{'amount': '0.025',
+  'amountSentToUserReserve': '-1',
+  'availableToTrade': '0.025',
+  'escrowAddress': '2NARLN4RJQMMqi1JoPPSBYsask722jBtsV7',
+  'exchId': 'Binonce',
+  'state': 'OPEN',
+  'timeClosed': -1,
+  'timeCreated': 1567089824,
+  'trades': [],
+  'userEscrowCurrency': 'BTC',
+  'userEscrowId': '505'},
+ {'amount': '0.025',
+  'amountSentToUserReserve': '-1',
+  'availableToTrade': '0.025',
+  'escrowAddress': '2N9EZX4aH2M2eT3fz8MQd2qgxiANAReUAL2',
+  'exchId': 'Binonce',
+  'state': 'OPEN',
+  'timeClosed': -1,
+  'timeCreated': 1567094605,
+  'trades': [],
+  'userEscrowCurrency': 'BTC',
+  'userEscrowId': '507'}]
+Creating a new exchange escrow with the following parameters
+Reserve address from config file: tltc1q7dmslhumu9hk96ukee44da7807w82ue40502h8
+exchId:     Exchange.BINONCE
+currency    LTC
+expire time:1567268795 // 2 days from now
+qty:        2.0
+
+Exchage Escrow (Funded by Exchage Automatically)
+exchEscrowId:           421
+funded escrow address:  QT8w5hCDLJavUGq888NnbWDAf5Ax3gd2X7
+pricePaid:              3.85e-06 Blockchain.BTC
+tradeBot will wait until escrow has been funded and confirmed by exchange
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+Waiting 60 seconds before next poll...
+All exch escrows that are not closed:
+[{'amount': '2',
+  'amountSentToUserReserve': '-1',
+  'availableToTrade': '0.000657',
+  'escrowAddress': 'QWzMX1PJkndtGqD8z3B9qWmVETT17vtsLs',
+  'exchEscrowCurrency': 'LTC',
+  'exchEscrowId': '417',
+  'exchId': 'Binonce',
+  'state': 'OPEN',
+  'timeClosed': -1,
+  'timeCreated': 1566837524,
+  'trades': ['426',
+             '427',
+             '428',
+             '429',
+             '430',
+             '431',
+             '435',
+             '437',
+             '438',
+             '439']},
+ {'amount': '2',
+  'amountSentToUserReserve': '-1',
+  'availableToTrade': '2',
+  'escrowAddress': 'QMahJDJiUnTaXV81y9ZP8Nr7epq7YLEWgx',
+  'exchEscrowCurrency': 'LTC',
+  'exchEscrowId': '418',
+  'exchId': 'Binonce',
+  'state': 'OPEN',
+  'timeClosed': -1,
+  'timeCreated': 1566930813,
+  'trades': []},
+ {'amount': '2',
+  'amountSentToUserReserve': '-1',
+  'availableToTrade': '2',
+  'escrowAddress': 'Qib1vv7ERnU3735WWBTkcrScL7BTmMpgiF',
+  'exchEscrowCurrency': 'LTC',
+  'exchEscrowId': '420',
+  'exchId': 'Binonce',
+  'state': 'OPEN',
+  'timeClosed': -1,
+  'timeCreated': 1567094131,
+  'trades': []}]
+Hooray! You have set up a user (escrowId 507) and exchange (escrowId 421) escrow!
+Write down your user and exchange escrowId and try the simpleTrade script!

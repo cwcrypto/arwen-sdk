@@ -55,32 +55,32 @@ class ArwenClient():
         return self.sendRequest(endpoint)
 
 
-    def registerApiKeys(self, apiKey, apiSecret, exchId='Binonce'):
+    def registerApiKeys(self, apiKey, apiSecret, exchId=sf.Exchange.BINONCE):
 
         endpoint = '/kyc/register'
 
         reqParams = dict()
-        reqParams['exchId'] = exchId
+        reqParams['exchId'] = exchId.value
         reqParams['apiKey'] = apiKey
         reqParams['apiSecret'] = apiSecret
 
         return self.sendRequest(endpoint, reqParams)
 
-    def getOAuthUrl(self, exchId='Binonce'):
+    def getOAuthUrl(self, exchId=sf.Exchange.BINONCE):
 
         endpoint = '/kyc/oauth'
 
         reqParams = dict()
-        reqParams['exchId'] = exchId
+        reqParams['exchId'] = exchId.value
 
         return self.sendRequest(endpoint, reqParams)
 
-    def getKycStatus(self, exchId='Binonce'):
+    def getKycStatus(self, exchId=sf.Exchange.BINONCE):
 
         endpoint = '/kyc/status'
 
         reqParams = dict()
-        reqParams['exchId'] = exchId
+        reqParams['exchId'] = exchId.value
 
         return self.sendRequest(endpoint, reqParams)
 

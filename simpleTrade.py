@@ -24,23 +24,24 @@ if __name__ == "__main__":
     ping = client.pingArwenClient()
     print(f'ArwenClient ping: {ping}')
 
-    userEscrowId = 505
-    exchEscrowId = 417
+    userEscrowIdBtc = 509
+    exchEscrowIdLtc = 417
+    exchEscrowIdBch = 418
 
-    ue = client.getEscrowById(sf.EscrowType.USER, userEscrowId)
-    ee = client.getEscrowById(sf.EscrowType.EXCH, exchEscrowId)
+    ueBtc = client.getEscrowById(sf.EscrowType.USER, userEscrowIdBtc)
+    eeLtc = client.getEscrowById(sf.EscrowType.EXCH, exchEscrowIdLtc)
 
     print('tradeBot will wait until escrow has been funded and confirmed by user')
-    sf.waitForEscowToOpen(ue, client)
+    sf.waitForEscowToOpen(ueBtc, client)
 
     print('tradeBot will wait until escrow has been funded and confirmed by exchange')
-    sf.waitForEscowToOpen(ee, client)
+    sf.waitForEscowToOpen(eeLtc, client)
 
     ### TRADING BELOW ###
 
     print('Creating a sell order of 0.01 BTC for LTC')
 
-    order = client.sellTrade(ue, ee, 0.0001)
+    order = client.sellTrade(ueBtc, eeLtc, 0.01)
     print('Order Details:')
     pprint.pprint(order)
 
@@ -49,9 +50,9 @@ if __name__ == "__main__":
     execute = client.execute(order)
     print(f'Order Execution: {execute}')
 
-    ue = client.updateEscrowDetails(ue)
+    ueBtc = client.updateEscrowDetails(ueBtc)
     print('Updated user Escrow details, notice the trade(s) made')
-    pprint.pprint(ue.trades)
+    pprint.pprint(ueBtc.trades)
 
     # Returns a stack error if you have no malformed escrows
     # resp = acc.cleanupBadEscrows()

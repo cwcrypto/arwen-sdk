@@ -1,0 +1,12 @@
+$ python3 simpleTrade.py 
+ArwenClient time:1567092767
+ArwenClient ping: pong
+tradeBot will wait until escrow has been funded and confirmed by user
+tradeBot will wait until escrow has been funded and confirmed by exchange
+Creating a sell order of 0.01 BTC for LTC
+Order Details:
+<arwenlib.orders.orderDetails object at 0x10f8e3b70>
+press key to send execute order 30 second timeout
+Order Execution: True
+Updated user Escrow details, notice the trade(s) made
+['441']
