@@ -1,6 +1,7 @@
 __all__ = ['orderDetails', 'priceInquiry']
 
 import arwenlib.supportFunctions as sf
+import json
 
 
 class orderDetails:
@@ -67,6 +68,9 @@ class orderDetails:
         self.timeCreated = int(query['timeCreated'])
         self.timeClosed = int(query['timeClosed'])
 
+    def toString(self):
+        return json.dumps(self.__dict__)
+
 
 class priceInquiry():
     def __init__(self, ue, ee, qty, side):
@@ -84,6 +88,9 @@ class priceInquiry():
         self.sellCurrency = response['sellCurrency']
         self.buyQty = response['buyQty']
         self.sellQty = response['sellQty']
+
+    def toString(self):
+        return json.dumps(self.__dict__)
 
 
 

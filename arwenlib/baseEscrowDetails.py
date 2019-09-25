@@ -2,7 +2,9 @@ __all__ = ['EscrowDetails', 'FiltersRequest']
 
 import arwenlib.supportFunctions as sf
 
-import constants as c
+from arwenlib import constants as c
+
+import json
 
 class EscrowDetails:
     def __init__(self):
@@ -39,6 +41,9 @@ class EscrowDetails:
         self.amount = float(req['qty'])
 
         return self
+
+    def toString(self):
+        return json.dumps(self.__dict__)
 
 class FiltersRequest:
     def __init__(self):

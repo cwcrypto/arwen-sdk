@@ -11,7 +11,7 @@ from arwenlib.exchEscrow import ExchEscrowDetails
 
 
 class ArwenClient():
-    def __init__(self, ip='127.0.0.1', port='5000'):
+    def __init__(self, ip, port):
         self.url = f'http://{ip}:{port}/api/v1'
 
 
@@ -55,7 +55,7 @@ class ArwenClient():
         return self.sendRequest(endpoint)
 
 
-    def registerApiKeys(self, apiKey, apiSecret, exchId=sf.Exchange.BINONCE):
+    def registerApiKeys(self, apiKey, apiSecret, exchId):
 
         endpoint = '/kyc/register'
 
@@ -66,7 +66,7 @@ class ArwenClient():
 
         return self.sendRequest(endpoint, reqParams)
 
-    def getOAuthUrl(self, exchId=sf.Exchange.BINONCE):
+    def getOAuthUrl(self, exchId):
 
         endpoint = '/kyc/oauth'
 
@@ -75,7 +75,7 @@ class ArwenClient():
 
         return self.sendRequest(endpoint, reqParams)
 
-    def getKycStatus(self, exchId=sf.Exchange.BINONCE):
+    def getKycStatus(self, exchId):
 
         endpoint = '/kyc/status'
 
@@ -166,10 +166,10 @@ class ArwenClient():
     def createNewUserEscrow(
         self,
         reserveAddress,
-        exchId = sf.Exchange.BINONCE,
-        currency = sf.Blockchain.BTC, 
-        expiryTime = sf.generateEscrowTimelock(2.0), 
-        qty = 0.025):
+        exchId,
+        currency, 
+        expiryTime, 
+        qty):
 
         from arwenlib.escrowRequests import NewUserEscrowRequest
 
@@ -205,11 +205,11 @@ class ArwenClient():
         self,
         reserveAddress,
         userEscrow,
-        exchId=sf.Exchange.BINONCE,
-        exchEscrowCurrency=sf.Blockchain.LTC,
-        qty=2.0,
-        expiryTime=sf.generateEscrowTimelock(2.0),
-        maxPrice=0.005):
+        exchId,
+        exchEscrowCurrency,
+        qty,
+        expiryTime,
+        maxPrice):
         
         from arwenlib.escrowRequests import NewExchEscrowRequest
 
@@ -227,11 +227,11 @@ class ArwenClient():
 
     def priceExchEscrow(
         self,
-        exchId=sf.Exchange.BINONCE,
-        exchCurrency=sf.Blockchain.LTC,
-        qty=2.0,
-        expiryTime=sf.generateEscrowTimelock(1.0),
-        userCurrency=[sf.Blockchain.BTC, sf.Blockchain.LTC]):
+        exchId,
+        exchCurrency,
+        qty,
+        expiryTime,
+        userCurrency):
         
         endpoint = '/exchescrow/price'
 
@@ -245,7 +245,10 @@ class ArwenClient():
         return self.sendRequest(endpoint, params)
 
 
-    def closeExchEscrow(self, exchEscrowId):
+    def closeExchEscrow(self, exchEscrow):
+        return self.closeExchEscrowById(exchEscrow.escrowId)
+
+    def closeExchEscrowById(self, exchEscrowId):
 
         endpoint = '/exchescrow/close'
 
@@ -277,7 +280,7 @@ class ArwenClient():
         endpoint = '/orders/details'
 
         params = dict()
-        params['orderId'] = order.orderId
+        params['orderId'] = orderId
 
         return order.updateFromQuery(self.sendRequest(endpoint, params))
 

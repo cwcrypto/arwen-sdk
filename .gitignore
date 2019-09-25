@@ -108,5 +108,4 @@ venv.bak/
 *.tar*
 
 # public address ignore
-constants.py
 .vscode/
