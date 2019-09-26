@@ -20,7 +20,8 @@ def startArwenClient(ip='127.0.0.1', port='5000'):
 
     client = Arwen.ArwenClient(ip, port)
 
-    client.initArwenService()
+    resp = client.initArwenService()
+    print(resp.text)
 
     return client
 

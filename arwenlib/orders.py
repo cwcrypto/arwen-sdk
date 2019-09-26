@@ -69,7 +69,7 @@ class orderDetails:
         self.timeClosed = int(query['timeClosed'])
 
     def toString(self):
-        return json.dumps(self.__dict__)
+        return self.__dict__
 
 
 class priceInquiry():
@@ -90,7 +90,7 @@ class priceInquiry():
         self.sellQty = response['sellQty']
 
     def toString(self):
-        return json.dumps(self.__dict__)
+        return self.__dict__
 
 
 

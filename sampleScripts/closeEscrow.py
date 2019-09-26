@@ -18,7 +18,7 @@ parser.add_argument('--type',
     '-t',
     type=str,
     required=True,
-    help='USER or EXCH')
+    help='user or exch')
 
 parser.add_argument('--id',
     '-i',
@@ -35,11 +35,19 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-userEscrow = client.getEscrowById(sf.EscrowType.USER, args.userEscrowId)
+etype = sf.EscrowType(args.type)
+
+escrow = client.getEscrowById(etype, args.id)
+
+if(escrow == None):
+    print(f"No {etype.value} escrow found")
+    exit()
+
+print(escrow.toString())
 
 resp = None
 
-if(sf.EscrowType(args.type) == sf.EscrowType.USER):
+if(escrow.escrowType == sf.EscrowType.USER):
     resp = client.closeUserEscrowById(args.id)
 else:
     resp = client.closeExchEscrowById(args.id)

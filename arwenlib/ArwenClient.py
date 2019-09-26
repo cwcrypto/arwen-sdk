@@ -111,6 +111,9 @@ class ArwenClient():
         
         escrowQueryResult = self.queryEscrows(escrowType, escrowId)
 
+        if(escrowQueryResult == None):
+            return None
+
         escrow.setFromQuery(escrowQueryResult)
 
         return escrow
@@ -137,7 +140,7 @@ class ArwenClient():
         escrowList = self.sendRequest(endpoint, queryParams.getFilter())
 
         if(len(escrowList) == 0):
-            return list()
+            return None
 
         if(len(escrowList) == 1):
             return escrowList[0]
@@ -197,7 +200,7 @@ class ArwenClient():
 
         resp = self.sendRequest(endpoint, params)
 
-        return resp['closed']
+        return resp
 
 
     # Exchange Escrow Management

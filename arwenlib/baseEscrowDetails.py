@@ -43,7 +43,7 @@ class EscrowDetails:
         return self
 
     def toString(self):
-        return json.dumps(self.__dict__)
+        return self.__dict__
 
 class FiltersRequest:
     def __init__(self):

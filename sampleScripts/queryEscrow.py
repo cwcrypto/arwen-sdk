@@ -11,13 +11,13 @@ from arwenlib import startArwenClient
 
 # reseveAddress, blockchain, exchId, expireTime, qty
 
-parser = argparse.ArgumentParser(prog='makeTrade', description='creates a trade')
+parser = argparse.ArgumentParser(prog='queryEscrow', description='query for escrows, optionally query with an id for a particular escrow')
 
 # Add the arguments
 parser.add_argument('--id',
     '-i',
     type=str,
-    required=True,
+    required=False,
     help='Id of user escrow you find')
 
 parser.add_argument('--type',
@@ -25,6 +25,27 @@ parser.add_argument('--type',
     type=str,
     required=True,
     help='type of escrow you want to find (USER or EXCH)')
+
+parser.add_argument('--open',
+    '-o',
+    type=bool,
+    required=False,
+    default=False,
+    help='if you want to filter for open or closed escrows')
+
+parser.add_argument('--limit',
+    '-l',
+    type=int,
+    required=False,
+    default=1000,
+    help='how many results to see')
+
+parser.add_argument('--startTime',
+    '-s',
+    type=int,
+    required=False,
+    default=None,
+    help='timestamp to filter from')
 
 # Execute the parse_args() method
 args = parser.parse_args()
@@ -35,6 +56,11 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-escrow = client.getEscrowById(sf.EscrowType(args.type), args.id)
+escrow = None
 
-print(escrow.toString())
+if(args.id != None):
+    escrow = client.getEscrowById(sf.EscrowType(args.type), args.id)
+    print(escrow.toString())
+else:
+    escrow = client.queryEscrows(sf.EscrowType(args.type), isOpen=args.open, limit=args.limit, startTime=args.startTime)
+    print(escrow)
