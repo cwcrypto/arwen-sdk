@@ -1,6 +1,6 @@
 __all__ = ['orderDetails', 'priceInquiry']
 
-import arwenlib.supportFunctions as sf
+from . import supportFunctions as sf
 import json
 
 

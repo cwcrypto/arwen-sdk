@@ -1,13 +1,19 @@
 __all__ = ['ArwenClient']
 
+import sys
+
+if sys.version_info[0] != 3 or sys.version_info[1] != 6 or sys.version_info[2] != 8:
+    print("This script requires Python version 3.6.8")
+    sys.exit(1)
+
 import requests
 import json
 
-import arwenlib.supportFunctions as sf
-from arwenlib.orders import orderDetails, priceInquiry
-from arwenlib.baseEscrowDetails import FiltersRequest
-from arwenlib.userEscrow import UserEscrowDetails
-from arwenlib.exchEscrow import ExchEscrowDetails
+from . import supportFunctions as sf
+from .orders import orderDetails, priceInquiry
+from .baseEscrowDetails import FiltersRequest
+from .userEscrow import UserEscrowDetails
+from .exchEscrow import ExchEscrowDetails
 
 
 class ArwenClient():

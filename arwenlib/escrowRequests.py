@@ -1,6 +1,6 @@
 __all__ = ['NewExchEscrowRequest', 'NewUserEscrowRequest']
 
-import arwenlib.supportFunctions as sf
+from . import supportFunctions as sf
 
 class NewExchEscrowRequest:
     def __init__(self):

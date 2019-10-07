@@ -1,13 +1,12 @@
 __all__ = ['EscrowType', 'Side', 'Exchange', 'OrderType', 'TimeInForce', 'Blockchain', 'EscrowState', 'OrderState', 'Symbol', 'generateEscrowTimelock', 'waitForEscowToOpen']
 
-
 import requests 
 import json
 import enum
 import time
 
-import arwenlib.ArwenClient as Arwen 
-import arwenlib.baseEscrowDetails as baseDetails
+from . import ArwenClient as Arwen 
+from . import baseEscrowDetails as baseDetails
 
 
 class EscrowType(enum.Enum): 

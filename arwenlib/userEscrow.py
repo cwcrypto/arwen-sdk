@@ -1,7 +1,7 @@
 __all__ = ['UserEscrowDetails',]
 
-import arwenlib.supportFunctions as sf
-import arwenlib.baseEscrowDetails as baseDetails
+from . import supportFunctions as sf
+from . import baseEscrowDetails as baseDetails
 
 
 class UserEscrowDetails(baseDetails.EscrowDetails):

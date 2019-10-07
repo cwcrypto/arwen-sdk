@@ -16,7 +16,7 @@ __all__ = [
 
 
 def startArwenClient(ip='127.0.0.1', port='5000'):
-    import arwenlib.ArwenClient as Arwen
+    from . import ArwenClient as Arwen
 
     client = Arwen.ArwenClient(ip, port)
 

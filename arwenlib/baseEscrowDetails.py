@@ -1,8 +1,8 @@
 __all__ = ['EscrowDetails', 'FiltersRequest']
 
-import arwenlib.supportFunctions as sf
+from . import supportFunctions as sf
 
-from arwenlib import constants as c
+from . import constants as c
 
 import json
 

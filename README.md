@@ -3,7 +3,7 @@ Python3 trading example for interacting with arwen-api
 
 Prerequisites:
  - [wget](https://www.gnu.org/software/wget/manual/wget.html)
- - [python 3.6+](https://www.python.org/downloads/)
+ - [python 3.6.8](https://www.python.org/downloads/release/python-368/)
  - [Docker](https://hub.docker.com/)
 
 
@@ -49,7 +49,7 @@ https://arwenclient.docs.apiary.io/
 
 
 Notes:
- - For python, please create a virtual environment with the [requirements](./reqs.txt) installed
+ - For python, please create a virtual environment of python3.6.8 with the [requirements](./reqs.txt) installed
  - The funding flow requires the trader to fund escrows using a hot wallet outside of arwen-api before continuing with making trades
  - Allow time for user and exchange escrows to confirmed to be open before trying to make trades (can take up to 30 minutes for escrows to confirm on testnet)
  - Set your reserve [addresses](./constants.py)
