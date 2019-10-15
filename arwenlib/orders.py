@@ -58,7 +58,7 @@ class orderDetails:
     def updateFromQuery(self, query):
         self.type = sf.OrderType(query['type'])
         self.state = sf.OrderState(query['state'])
-        self.symbol = sf.Symbol('','').fromString(query['symbol'])
+        self.symbol = sf.Symbol.fromString(query['symbol'])
         self.exchEscrowQty = float(query['exchEscrowQty'])
         self.userEscrowQty = float(query['userEscrowQty'])
         self.price = float(self.exchEscrowQty / self.userEscrowQty)

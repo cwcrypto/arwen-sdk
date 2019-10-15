@@ -59,11 +59,10 @@ class Symbol():
         self.base = baseCurrency # should be Blockchain
         self.separator = '-'
 
-    def fromString(self, sym):
-        b,q = sym.split('-')
-        self.quote = q
-        self.base = b
-        return self
+    @staticmethod
+    def fromString(sym):
+        quote, base = sym.split('-')
+        return Symbol(quote, base)
 
     def toString(self):
         return f'{self.quote.value}{self.separator}{self.base.value}'
