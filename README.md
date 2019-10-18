@@ -1,3 +1,5 @@
+**DOWNLOAD LINKS DOWN UNTIL MONDAY MORNING**
+
 # arwenlib
 Python3.6.8 interface example for interacting with Arwen Client. Arwen Client is a dockerized version of the Arwen application that enables users to create escrows and perform atomic swaps programmatically. 
 
@@ -26,7 +28,7 @@ Download and install arwen-api (depending on your machine you may need sudo):
 
 Start the docker image:
 ```
-./start_api.sh
+./start_api_NETWORK.sh  # mainnet or testnet
 ```
 
 By default the start script will run a testnet mode of Arwen in the background. If you would like to see the log output remove the `-d` flag from this script. To switch to mainnet mode, change run this script with the mainnet version of the docker.
