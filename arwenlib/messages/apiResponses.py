@@ -89,7 +89,7 @@ def api_ouath_response_from_dict(s: Any) -> APIOuathResponse:
     return APIOuathResponse.from_dict(s)
 
 
-class ClientRefreshKYCResponse:
+class APIKYCStatusResponse:
     exch_id: str
     kyc_status: str
 
@@ -98,14 +98,15 @@ class ClientRefreshKYCResponse:
         self.kyc_status = kyc_status
 
     @staticmethod
-    def from_dict(obj: Any) -> 'ClientRefreshKYCResponse':
+    def from_dict(obj: Any) -> 'APIKYCStatusResponse':
         assert isinstance(obj, dict)
         exch_id = from_str(obj.get("exchId"))
         kyc_status = from_str(obj.get("kycStatus"))
-        return ClientRefreshKYCResponse(exch_id, kyc_status)
+        return APIKYCStatusResponse(exch_id, kyc_status)
 
-def client_refresh_kyc_response_from_dict(s: Any) -> ClientRefreshKYCResponse:
-    return ClientRefreshKYCResponse.from_dict(s)
+
+def api_kyc_status_response(s: Any) -> APIKYCStatusResponse:
+    return APIKYCStatusResponse.from_dict(s)
 
 
 class APIEscrowFeeHistoryResponse:
