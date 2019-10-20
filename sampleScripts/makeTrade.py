@@ -49,15 +49,15 @@ config.loadConfig(configFilePath)
 
 client.registerApiKeys(config.testnetApiKey, config.testnetApiSecret, sf.Exchange.BINONCE)
 
-userEscrow = client.getEscrowById(sf.EscrowType.USER, args.userEscrowId)
-exchEscrow = client.getEscrowById(sf.EscrowType.EXCH, args.exchEscrowId)
+userEscrow = client.queryEscrowById(sf.EscrowType.USER, args.userEscrowId)
+exchEscrow = client.queryEscrowById(sf.EscrowType.EXCH, args.exchEscrowId)
 
 side = sf.Side(args.side)
 order = None
 
 if(side == sf.Side.BUY):
-    order = client.buyTrade(userEscrow, exchEscrow, args.qty)
+    order = client.newBuyOrder(userEscrow, exchEscrow, args.qty)
 else:
-    order = client.sellTrade(userEscrow, exchEscrow, args.qty)
+    order = client.newSellOrder(userEscrow, exchEscrow, args.qty)
 
 print(f'OrderId: {order.orderId}')

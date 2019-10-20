@@ -10,13 +10,18 @@ import requests
 import json
 
 from . import supportFunctions as sf
-from .orders import orderDetails, priceInquiry
-from .baseEscrowDetails import FiltersRequest
+from .orders import OrderDetails
+from .baseEscrowDetails import FiltersRequest, EscrowDetails
 from .userEscrow import UserEscrowDetails
 from .exchEscrow import ExchEscrowDetails
+from .messages import baseResponse, apiRequests, apiResponses
+from .exceptions import ProtocolException, SystemException
 
+from typing import Type, cast, TypeVar
 
 class ArwenClient():
+    url: str
+
     def __init__(self, ip, port):
         self.url = f'http://{ip}:{port}/api/v1'
 
@@ -31,8 +36,16 @@ class ArwenClient():
         if(resp == None or resp == ''):
             return None
 
-        return  json.loads(resp)
+        parsedResp = baseResponse.api_base_response_from_dict(json.loads(resp))
 
+        if(parsedResp.code == 500):
+            raise ProtocolException(parsedResp.error, parsedResp.data)
+        
+        if(parsedResp.code == 400):
+            raise SystemException(parsedResp.error, parsedResp.data)
+
+        return json.loads(parsedResp.data)
+        
 
     # Account Management
     def initArwenService(self):
@@ -61,66 +74,50 @@ class ArwenClient():
         return self.sendRequest(endpoint)
 
 
-    def registerApiKeys(self, apiKey, apiSecret, exchId):
+    def registerApiKeys(self, apiKey, apiSecret, exchId: sf.Exchange):
 
         endpoint = '/kyc/register'
 
-        reqParams = dict()
-        reqParams['exchId'] = exchId.value
-        reqParams['apiKey'] = apiKey
-        reqParams['apiSecret'] = apiSecret
+        requestObj = apiRequests.APIRegisterKeys(exchId.value, apiKey, apiSecret)
+        response = self.sendRequest(endpoint, requestObj.to_dict())
 
-        return self.sendRequest(endpoint, reqParams)
+        return apiResponses.api_key_reg_response_from_dict(response)
 
-    def getOAuthUrl(self, exchId):
+    def getOAuthUrl(self, exchId: sf.Exchange):
 
         endpoint = '/kyc/oauth'
 
-        reqParams = dict()
-        reqParams['exchId'] = exchId.value
+        requestObj = apiRequests.APIOuathRequest(exchId.value)
+        response = self.sendRequest(endpoint, requestObj.to_dict())
 
-        return self.sendRequest(endpoint, reqParams)
+        return apiResponses.api_ouath_response_from_dict(response)
 
-    def getKycStatus(self, exchId):
+    def getKycStatus(self, exchId: sf.Exchange):
 
         endpoint = '/kyc/status'
 
-        reqParams = dict()
-        reqParams['exchId'] = exchId.value
+        requestObj = apiRequests.APIKYCStatusRequest(exchId.value)
+        response = self.sendRequest(endpoint, requestObj.to_dict())
 
-        return self.sendRequest(endpoint, reqParams)
+        return apiResponses.api_kyc_status_response(response)
+    
 
+    def queryEscrowById(self, escrowType: sf.EscrowType, escrowId: str) -> EscrowDetails:
 
-    def feeHistory(self, startTime = None):
-
-        endpoint = '/feehistory'
-
-        reqParams = dict()
-        reqParams['startTime'] = startTime
-
-        return self.sendRequest(endpoint, reqParams)
-
-    def getEscrowById(self, escrowType ,escrowId=None):
-
-        if(escrowId == None):
+        if(escrowId == None or escrowId == ""):
             raise AttributeError('escrowId not set for query by Id')
 
         if not isinstance(escrowType, sf.EscrowType):
             raise AttributeError('escrowType must be assigned for queryEscrows()')
 
-        escrow = None
+        responseObj = self.queryEscrows(escrowType, escrowId)
 
         if(escrowType == sf.EscrowType.USER):
             escrow = UserEscrowDetails()
         else:
             escrow = ExchEscrowDetails()
-        
-        escrowQueryResult = self.queryEscrows(escrowType, escrowId)
-
-        if(escrowQueryResult == None):
-            return None
-
-        escrow.setFromQuery(escrowQueryResult)
+            
+        escrow.setFromQuery(responseObj[0])
 
         return escrow
 
@@ -130,228 +127,257 @@ class ArwenClient():
         self,
         escrowType, 
         escrowId = None, 
-        startTime = None, 
+        fromTime = None, 
         isOpen = True, 
         limit = 1000, 
-        exchId = None):
+        exchId = None) -> list():
 
         if not isinstance(escrowType, sf.EscrowType):
             raise AttributeError('escrowType must be assigned for queryEscrows()')
 
         endpoint = f'/{escrowType.value}escrow/query'
 
-        queryParams = FiltersRequest()
-        queryParams.setFilter(escrowType, escrowId, startTime, isOpen, limit, exchId)
+        queryParams = apiRequests.APIFilterRequest(escrowId, fromTime, limit, exchId, not isOpen)
 
-        escrowList = self.sendRequest(endpoint, queryParams.getFilter())
+        response = self.sendRequest(endpoint, queryParams.to_dict)
+        responseObj = None
 
-        if(len(escrowList) == 0):
+        if(escrowType == sf.EscrowType.USER):
+            responseObj = apiResponses.api_user_escrow_from_dict(response)
+        else:
+            responseObj = apiResponses.api_exchange_escrow_from_dict(response)
+
+        if(len(responseObj) == 0):
             return None
 
-        if(len(escrowList) == 1):
-            return escrowList[0]
-
-        return escrowList
+        return responseObj
 
 
-    def updateEscrowDetails(self, escrow):
-        query = self.queryEscrows(escrow.escrowType, escrow.escrowId)
-        escrow.setFromQuery(query)
-        return escrow
+    def updateExchangeEscrow(self, escrow: apiResponses.APIExchangeEscrowElement) -> ExchEscrowDetails:
+        return self.queryEscrowById(sf.EscrowType.EXCH, escrow.exch_escrow_id)
+    
+    def updateUserEscrow(self, escrow: apiResponses.APIExchangeEscrowElement) -> UserEscrowDetails:
+        return self.queryEscrowById(sf.EscrowType.USER, escrow.exch_escrow_id)
 
-    # Returns list of escrowIds
-    def escrowHistory(self, escrowType, startTime = None):
-
-        endpoint = f'/{sf.EscrowType.value}escrow/history'
-
-        queryParams = dict()
-        queryParams['startTime'] = startTime
-
-        escrowIdList = self.sendRequest(endpoint, queryParams)
-
-        return escrowIdList
 
     # User Escrow Management
     def createNewUserEscrow(
         self,
-        reserveAddress,
-        exchId,
-        currency, 
-        expiryTime, 
-        qty):
-
-        from arwenlib.escrowRequests import NewUserEscrowRequest
+        reserveAddress: str,
+        exchId: str,
+        currency: sf.Blockchain, 
+        expiryTime: int, 
+        amount: float) -> UserEscrowDetails:
 
         endpoint = '/userescrow/create'
 
-        newUEReq = NewUserEscrowRequest()
-        newUEReq.setup(exchId, currency, expiryTime, qty, reserveAddress)
+        newUserEscrowRequest = apiRequests.APINewUserEscrowRequest(exchId, currency, amount, reserveAddress, expiryTime)
 
-        resp = self.sendRequest(endpoint, newUEReq.getRequest())
-        newUEReq.setResponse(resp)
+        response = self.sendRequest(endpoint, newUserEscrowRequest.to_dict())
+        responseObj = apiResponses.api_new_user_escrow_response_from_dict(response)
 
-        return newUEReq.createUserEscrowDetails()
+        userEscrow = UserEscrowDetails()
+        userEscrow.setFromNewEscrowReq(newUserEscrowRequest)
+        userEscrow.setFromNewEscrowResp(responseObj)
+
+        return userEscrow        
 
 
-    def closeUserEscrow(self, escrow):
-        self.closeUserEscrowById(escrow.escrowId)
+    def closeUserEscrow(self, escrow: UserEscrowDetails) -> bool:
+        return self.closeUserEscrowById(escrow.escrowId)
 
 
-    def closeUserEscrowById(self, userEscrowId):
+    def closeUserEscrowById(self, userEscrowId: str) -> bool:
 
         endpoint = '/userescrow/close'
 
-        params = dict()
-        params['userEscrowId'] = userEscrowId
+        request = apiRequests.APICloseUserEscrowRequest(userEscrowId)
+        response = self.sendRequest(endpoint, request.to_dict())
 
-        resp = self.sendRequest(endpoint, params)
+        responseOjb = apiResponses.api_close_escrow_response_from_dict(response)
 
-        return resp
+        return responseOjb.close
 
 
     # Exchange Escrow Management
     def createNewExchEscrow(
         self,
-        reserveAddress,
-        userEscrow,
-        exchId,
-        exchEscrowCurrency,
-        qty,
-        expiryTime,
-        maxPrice):
-        
-        from arwenlib.escrowRequests import NewExchEscrowRequest
+        exchId: str,
+        reserveAddress: str,
+        exchEscrowCurrency: sf.Blockchain,
+        amount: float,
+        userEscrowId: str,
+        expiryTime: int) -> ExchEscrowDetails:
 
         endpoint = '/exchescrow/create'
 
-        newEEReq = NewExchEscrowRequest()
-        newEEReq.setup(exchId, exchEscrowCurrency, expiryTime, qty, reserveAddress,
-            maxPrice, userEscrow)
+        request = apiRequests.APINewExchangeEscrowRequest(exchId, exchEscrowCurrency, amount, expiryTime, reserveAddress, userEscrowId)
+        response = self.sendRequest(endpoint, request.to_dict())
         
-        resp = self.sendRequest(endpoint, newEEReq.getRequest())
-        newEEReq.setResponse(resp)
+        responseObj = apiResponses.api_new_exchange_escrow_response_from_dict(response)
 
-        return newEEReq.createUserEscrowDetails()
+        exchEscrow = ExchEscrowDetails()
+        exchEscrow.setFromNewEscrowReq(requests)
+        exchEscrow.setFromNewEscrowResp(responseObj)
+
+        return exchEscrow
 
 
     def priceExchEscrow(
         self,
-        exchId,
-        exchCurrency,
-        qty,
-        expiryTime,
-        userCurrency):
+        exchId: str,
+        exchEscrowCurrency: sf.Blockchain,
+        amount: float,
+        expiryTime: int,
+        userCurrencies: list()):
         
         endpoint = '/exchescrow/price'
 
-        params = dict()
-        params['exchId'] = exchId.value
-        params['exchCurrency'] = exchCurrency.value
-        params['qty'] = str(qty)
-        params['expiryTime'] = expiryTime
-        params['userCurrency'] = [uc.value for uc in userCurrency]
+        request = apiRequests.APIPriceExchangeEscrowRequest(exchId, exchEscrowCurrency, amount, expiryTime, userCurrencies)
+        response = self.sendRequest(endpoint, request.to_dict())
+        
+        responseObj = apiResponses.api_escrow_fee_response_from_dict(response)
 
-        return self.sendRequest(endpoint, params)
+        return responseObj
 
 
-    def closeExchEscrow(self, exchEscrow):
+    def closeExchEscrow(self, exchEscrow: ExchEscrowDetails) -> bool:
         return self.closeExchEscrowById(exchEscrow.escrowId)
 
-    def closeExchEscrowById(self, exchEscrowId):
 
-        endpoint = '/exchescrow/close'
+    def closeExchEscrowById(self, exchEscrowId: str) -> bool:
 
-        params = dict()
-        params['exchEscrowId'] = exchEscrowId
+        endpoint = '/userescrow/close'
 
-        resp = self.sendRequest(endpoint, params)
+        request = apiRequests.APICloseExchangeEscrowRequest(exchEscrowId)
+        response = self.sendRequest(endpoint, request.to_dict())
 
-        return resp['closed']
+        responseOjb = apiResponses.api_close_escrow_response_from_dict(response)
 
-
-    # Orders
-    def ordersHistory(self, startTime = None):
-
-        endpoint = '/orders/history'
-
-        queryParams = dict()
-        queryParams['startTime'] = startTime
-
-        orderIdList = self.sendRequest(endpoint, queryParams)
-
-        return orderIdList
+        return responseOjb.close
 
 
-    def queryOrderDetailsById(self, orderId):
+    def feeHistory(self, startTime: int) -> apiResponses.APIEscrowFeeHistoryResponse:
 
-        order = orderDetails()
+        endpoint = '/exchescrow/feehistory'
 
-        endpoint = '/orders/details'
+        request = apiRequests.APIHistoryRequest(startTime)
+        response = self.sendRequest(endpoint, request.to_dict())
 
-        params = dict()
-        params['orderId'] = orderId
+        responseObj = apiResponses.api_escrow_fee_history_from_dict(response)
 
-        return order.updateFromQuery(self.sendRequest(endpoint, params))
-
-
-    def queryOrderDetails(self, order):
-        return self.queryOrderDetailsById(order.orderId)
+        return responseObj
 
 
-    def sellTrade(self, userEscrow, exchEscrow, qty):
+    def queryOrdersById(self, orderId: str) -> OrderDetails:
+        return (self.queryOrders(orderId))[0]
+
+
+    def queryOrders(
+        self,
+        orderId = None, 
+        fromTime = None, 
+        isOpen = True, 
+        limit = 1000, 
+        exchId = None) -> list():
+
+        endpoint = '/orders/query'
+
+        request = apiRequests.APIFilterRequest(orderId, fromTime, limit, exchId, not isOpen)
+        response = self.sendRequest(endpoint, request.to_dict())
+
+        responseObj = apiResponses.api_order_query_response_from_dict(response)
+        
+        return responseObj
+
+
+    def newSellOrder(self, 
+        userEscrow: UserEscrowDetails, 
+        exchEscrow: ExchEscrowDetails,
+        amount: float) -> OrderDetails:
 
         endpoint = '/orders/quote'
 
-        order = orderDetails()
-        order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.SELL)
-        resp = self.sendRequest(endpoint, order.getRequest())
-        order.updateOrderFromQuote(resp)
-        
+        symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency)
+
+        request = apiRequests.APIPlaceOrderRequest(sf.OrderType.RFQ.value, symbol.toString(), sf.TimeInForce.FOK.value, None, amount, sf.Side.SELL.value, userEscrow.escrowId, exchEscrow.escrowId)
+
+        response = self.sendRequest(endpoint, requests)
+        responseObj = apiResponses.api_place_order_response_from_dict(response)
+
+        order = OrderDetails()
+
+        order.updateOrderFromRequest(request)
+        order.updateOrderFromRequest(responseObj)
+
         return order
 
 
-    def buyTrade(self, userEscrow, exchEscrow, qty):
+    def newBuyOrder(self, 
+        userEscrow: UserEscrowDetails, 
+        exchEscrow: ExchEscrowDetails,
+        amount: float) -> OrderDetails:
 
         endpoint = '/orders/quote'
 
-        order = orderDetails()
-        order.setupOrder(userEscrow, exchEscrow, qty, sf.Side.BUY)
-        resp = self.sendRequest(endpoint, order.getRequest())
-        order.updateOrderFromQuote(resp)
-        
+        symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency)
+
+        request = apiRequests.APIPlaceOrderRequest(sf.OrderType.RFQ.value, symbol.toString(), sf.TimeInForce.FOK.value, None, amount, sf.Side.BUY.value, userEscrow.escrowId, exchEscrow.escrowId)
+
+        response = self.sendRequest(endpoint, request.to_dict())
+        responseObj = apiResponses.api_place_order_response_from_dict(response)
+
+        order = OrderDetails()
+
+        order.updateOrderFromRequest(request)
+        order.updateOrderFromRequest(responseObj)
+
         return order
 
 
-    def inquirePrice(self, userEscrow, exchEscrow, qty, side):
-
-        endpoint = '/orders/inquiry'
-
-        inquiry = priceInquiry(userEscrow, exchEscrow, qty, side)
-        resp = self.sendRequest(endpoint, inquiry.getRequest())
-        inquiry.setFromInquiry(resp)
+    def executeById(self, orderId: str) -> bool:
         
-        return inquiry
-
-
-    def execute(self, order):
-
         endpoint = '/orders/execute'
-        
-        params = dict()
-        params['orderId'] = order.orderId
 
-        resp = self.sendRequest(endpoint, params)
+        request = apiRequests.APIOrderIDRequest(orderId)
+        response = self.sendRequest(endpoint, request.to_dict())
 
-        return resp['executed']
+        responseObj = apiResponses.api_order_executed_response_from_dict(response)
+
+        return responseObj.executed
 
 
-    def cancel(self, order):
+    def execute(self, order: OrderDetails) -> bool:
+        return self.executeById(order.orderId)
+
+
+    def cancelById(self, orderId: str) -> bool:
 
         endpoint = '/orders/cancel'
         
-        params = dict()
-        params['orderId'] = order.orderId
+        request = apiRequests.APIOrderIDRequest(orderId)
+        response = self.sendRequest(endpoint, request.to_dict())
 
-        resp = self.sendRequest(endpoint, params)
+        responseObj = apiResponses.api_order_canceled_response_from_dict(response)
 
-        return resp['canceled']
+        return responseObj.canceled
+
+
+    def cancel(self, order: OrderDetails) -> bool:
+        return self.cancelById(order.orderId)
+
+
+    def inquirePrice(self, 
+        userEscrowId: str, 
+        exchEscrowId: str, 
+        amount: float, 
+        side: sf.Side) -> apiResponses.APIOrderInquiryResponse:
+
+        endpoint = '/orders/inquiry'
+
+        request = apiRequests.APIOrderInquiryRequest(userEscrowId, exchEscrowId, amount, side.value)
+        response = self.sendRequest(endpoint, request.to_dict())
+
+        responseObj = apiResponses.api_order_inquiry_response_from_dict(response)
+
+        return responseObj

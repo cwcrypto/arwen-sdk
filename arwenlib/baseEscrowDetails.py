@@ -4,46 +4,56 @@ from . import supportFunctions as sf
 
 from . import constants as c
 
+from .messages import apiResponses, apiRequests
+
 import json
 
 class EscrowDetails:
+    exchId: str
+    escrowId: str
+    escrowAddress: str
+    escrowType: sf.EscrowType
+    state: sf.EscrowState
+    currency: sf.Blockchain
+    amount: float
+    expiryTime: int
+    availableToTrade: float
+    trades: list()
+    amountSentToUserReserve: float
+    timeCreated: int
+    timeClosed: int
+
     def __init__(self):
+        self.exchId = None
         self.escrowId = None
         self.escrowAddress = None
-        self.state = None
+        self.state = sf.EscrowState.UNKNOWN
         self.currency = None
-        self.amount = None
-        self.expiryTime = None
-        self.availableToTrade = None
+        self.amount = 0
+        self.expiryTime = 0
+        self.availableToTrade = -1
         self.trades = list()
-        self.amountSentToUserReserve = None
-        self.timeCreated = None
-        self.timeClosed = None
+        self.amountSentToUserReserve = -1
+        self.timeCreated = -1
+        self.timeClosed = -1
         self.escrowType = None
 
-    def setFromQuery(self, queryResponse):        
-        self.escrowId = queryResponse[f'{self.escrowType.value}EscrowId']
-        self.escrowAddress = queryResponse['escrowAddress']
-        self.state = sf.EscrowState(queryResponse['state'])
-        self.currency = sf.Blockchain(queryResponse[f'{self.escrowType.value}EscrowCurrency'])
-        self.amount = float(queryResponse['amount'])
-        self.availableToTrade = float(queryResponse['availableToTrade'])
-        self.trades = queryResponse['trades']
-        self.amountSentToUserReserve = float(queryResponse['amountSentToUserReserve'])
-        self.timeCreated = int(queryResponse['timeCreated'])
-        self.timeClosed = int(queryResponse['timeClosed'])
-        
-        return self
+    def setFromNewEscrowReq(self, request):
+        if isinstance(request, apiRequests.APINewUserEscrowRequest):
+            self.currency = sf.Blockchain(request.user_escrow_currency)
+            self.amount = request.amount
+            self.availableToTrade = self.amount
 
-    def setFromNewEscrowReq(self, req):
-        self.currency = sf.Blockchain(req[f'{self.escrowType.value}EscrowCurrency'])
-        self.availableToTrade = float(req['qty'])
-        self.amount = float(req['qty'])
+        if isinstance(request, apiRequests.APINewExchangeEscrowRequest):
+            self.currency = sf.Blockchain(request.exch_escrow_currency)
+            self.amount = request.amount
+            self.availableToTrade = self.amount
 
-        return self
+    def setFromQuery(self, queryResponse):
+        raise NotImplementedError("This is an abstract class, please use User/ExchEscrowDetails classes")
 
     def toString(self):
-        return self.__dict__
+        return str(self.__dict__)
 
 class FiltersRequest:
     def __init__(self):

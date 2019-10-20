@@ -151,10 +151,10 @@ class APINewUserEscrowRequest:
     reserve_address: str
     expiry_time: int
 
-    def __init__(self, exch_id: str, user_escrow_currency: str, qty: float, reserve_address: str, expiry_time: int) -> None:
+    def __init__(self, exch_id: str, user_escrow_currency: str, amount: float, reserve_address: str, expiry_time: int) -> None:
         self.exch_id = exch_id
         self.user_escrow_currency = user_escrow_currency
-        self.amount = qty
+        self.amount = amount
         self.reserve_address = reserve_address
         self.expiry_time = expiry_time
 
@@ -173,14 +173,14 @@ def api_new_user_escrow_request_to_dict(x: APINewUserEscrowRequest) -> Any:
 
 
 class APICloseUserEscrowRequest:
-    user_escrow_id: int
+    user_escrow_id: str
 
-    def __init__(self, user_escrow_id: int) -> None:
+    def __init__(self, user_escrow_id: str) -> None:
         self.user_escrow_id = user_escrow_id
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["userEscrowId"] = from_str(str(self.user_escrow_id))
+        result["userEscrowId"] = from_str(self.user_escrow_id)
         return result
 
 
@@ -205,7 +205,7 @@ class APIPriceExchangeEscrowRequest:
     def to_dict(self) -> dict:
         result: dict = {}
         result["exchId"] = from_str(self.exch_id)
-        result["exchCurrency"] = from_str(self.exch_currency)
+        result["exchEscrowCurrency"] = from_str(self.exch_currency)
         result["amount"] = from_int(self.amount)
         result["expiryTime"] = from_int(self.expiry_time)
         result["userCurrency"] = from_list(from_str, self.user_currency)
@@ -217,14 +217,14 @@ def api_price_exchange_escrow_request_to_dict(x: APIPriceExchangeEscrowRequest) 
 
 class APIEscrowFeeRequest:
     exch_id: str
-    exch_currency: str
+    exch_escrow_currency: str
     amount: float
     expiry_time: int
     user_currency: List[str]
 
     def __init__(self, exch_id: str, exch_currency: str, amount: float, expiry_time: int, user_currency: List[str]) -> None:
         self.exch_id = exch_id
-        self.exch_currency = exch_currency
+        self.exch_escrow_currency = exch_currency
         self.amount = amount
         self.expiry_time = expiry_time
         self.user_currency = user_currency
@@ -232,7 +232,7 @@ class APIEscrowFeeRequest:
     def to_dict(self) -> dict:
         result: dict = {}
         result["exchId"] = from_str(self.exch_id)
-        result["exchCurrency"] = from_str(self.exch_currency)
+        result["exchEscrowCurrency"] = from_str(self.exch_escrow_currency)
         result["amount"] = from_float(self.amount)
         result["expiryTime"] = from_int(self.expiry_time)
         result["userCurrency"] = from_list(from_str, self.user_currency)
@@ -244,15 +244,15 @@ def api_escrow_fee_response_to_dict(x: APIEscrowFeeRequest) -> Any:
 
 class APINewExchangeEscrowRequest:
     exch_id: str
-    exch_currency: str
-    amount: int
+    exch_escrow_currency: str
+    amount: float
     expiry_time: int
     reserve_address: str
-    user_escrow_id: int
+    user_escrow_id: str
 
-    def __init__(self, exch_id: str, exch_currency: str, amount: int, expiry_time: int, reserve_address: str, user_escrow_id: int) -> None:
+    def __init__(self, exch_id: str, exch_currency: str, amount: float, expiry_time: int, reserve_address: str, user_escrow_id: str) -> None:
         self.exch_id = exch_id
-        self.exch_currency = exch_currency
+        self.exch_escrow_currency = exch_currency
         self.amount = amount
         self.expiry_time = expiry_time
         self.reserve_address = reserve_address
@@ -261,11 +261,11 @@ class APINewExchangeEscrowRequest:
     def to_dict(self) -> dict:
         result: dict = {}
         result["exchId"] = from_str(self.exch_id)
-        result["exchCurrency"] = from_str(self.exch_currency)
-        result["amount"] = from_int(self.amount)
+        result["exchEscrowCurrency"] = from_str(self.exch_escrow_currency)
+        result["amount"] = from_float(self.amount)
         result["expiryTime"] = from_int(self.expiry_time)
         result["reserveAddress"] = from_str(self.reserve_address)
-        result["userEscrowId"] = from_str(str(self.user_escrow_id))
+        result["userEscrowId"] = from_str(self.user_escrow_id)
         return result
 
 
@@ -304,3 +304,77 @@ class APIOrderIDRequest:
 
 def api_order_id_request_to_dict(x: APIOrderIDRequest) -> Any:
     return to_class(APIOrderIDRequest, x)
+
+class APIPlaceOrderRequest:
+    orderType: str
+    symbol: str
+    time_in_force: str
+    price: float
+    amount: float
+    side: str
+    user_escrow_id: str
+    exch_escrow_id: str
+
+    def __init__(self, orderType: str, symbol: str, time_in_force: str, price: float, amount: float, side: str, user_escrow_id: str, exch_escrow_id: str) -> None:
+        self.orderType = orderType
+        self.symbol = symbol
+        self.time_in_force = time_in_force
+        self.price = price
+        self.amount = amount
+        self.side = side
+        self.user_escrow_id = user_escrow_id
+        self.exch_escrow_id = exch_escrow_id
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["type"] = from_str(self.orderType)
+        result["symbol"] = from_str(self.symbol)
+        result["timeInForce"] = from_str(self.time_in_force)
+        result["price"] = from_float(self.price)
+        result["amount"] = from_float(self.amount)
+        result["side"] = from_str(self.side)
+        result["userEscrowId"] = from_str(self.user_escrow_id)
+        result["exchEscrowId"] = from_str(self.exch_escrow_id)
+        return result
+
+
+def api_place_order_request_to_dict(x: APIPlaceOrderRequest) -> Any:
+    return to_class(APIPlaceOrderRequest, x)
+
+
+class APIOrderInquiryRequest:
+    user_escrow_id: str
+    exch_escrow_id: str
+    amount: float
+    side: str
+
+    def __init__(self, user_escrow_id: str, exch_escrow_id: str, amount: float, side: str) -> None:
+        self.user_escrow_id = user_escrow_id
+        self.exch_escrow_id = exch_escrow_id
+        self.amount = amount
+        self.side = side
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'APIOrderInquiryRequest':
+        assert isinstance(obj, dict)
+        user_escrow_id = from_str(obj.get("userEscrowId"))
+        exch_escrow_id = from_str(obj.get("exchEscrowId"))
+        amount = from_float(obj.get("amount"))
+        side = from_str(obj.get("side"))
+        return APIOrderInquiryRequest(user_escrow_id, exch_escrow_id, amount, side)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["userEscrowId"] = from_str(self.user_escrow_id)
+        result["exchEscrowId"] = from_str(self.exch_escrow_id)
+        result["amount"] = from_float(self.amount)
+        result["side"] = from_str(self.side)
+        return result
+
+
+def api_order_inquiry_request_from_dict(s: Any) -> APIOrderInquiryRequest:
+    return APIOrderInquiryRequest.from_dict(s)
+
+
+def api_order_inquiry_request_to_dict(x: APIOrderInquiryRequest) -> Any:
+    return to_class(APIOrderInquiryRequest, x)

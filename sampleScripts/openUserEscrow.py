@@ -58,7 +58,7 @@ newUE = client.createNewUserEscrow(
     exchId=sf.Exchange(args.exchid),
     currency=sf.Blockchain(args.blockchain),
     expiryTime=sf.generateEscrowTimelock(args.expirytime),
-    qty=args.quantity)
+    amount=args.quantity)
 
 print(f'escrowId:           {newUE.escrowId}')
 print(f'fudingAddress:      {newUE.escrowAddress}')

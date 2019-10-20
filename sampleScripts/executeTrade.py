@@ -28,7 +28,7 @@ config.loadConfig(configFilePath)
 
 execute = client.execute(args.id)
 
-order = client.queryOrderDetailsById(args.id)
+order = client.queryOrdersById(args.id)
 
 print(execute)
 print(order.toString())

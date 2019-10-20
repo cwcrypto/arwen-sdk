@@ -59,20 +59,19 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-userEscrow = client.getEscrowById(sf.EscrowType.USER, args.userEscrowId)
+userEscrow = client.queryEscrowById(sf.EscrowType.USER, args.userEscrowId)
 
 newEE = client.createNewExchEscrow(
     reserveAddress=args.resvAddr,
-    userEscrow=userEscrow,
+    userEscrowId=userEscrow,
     exchId=sf.Exchange(args.exchid),
     exchEscrowCurrency=sf.Blockchain(args.blockchain),
     expiryTime=sf.generateEscrowTimelock(args.expirytime),
-    qty=args.quantity,
-    maxPrice=0.01)
+    amount=args.quantity)
 
 print(f'escrowId:           {newEE.escrowId}')
 print(f'fudingAddress:      {newEE.escrowAddress}')
-print(f'amountToFund:       {newEE.pricePaid}')
+print(f'amountToFund:       {newEE.escrowFeePaid}')
 
 sf.waitForEscowToOpen(newEE, client)
 

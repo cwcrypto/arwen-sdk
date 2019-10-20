@@ -37,7 +37,7 @@ config.loadConfig(configFilePath)
 
 etype = sf.EscrowType(args.type)
 
-escrow = client.getEscrowById(etype, args.id)
+escrow = client.queryEscrowById(etype, args.id)
 
 if(escrow == None):
     print(f"No {etype.value} escrow found")

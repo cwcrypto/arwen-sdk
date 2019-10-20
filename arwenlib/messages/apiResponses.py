@@ -112,15 +112,15 @@ def api_kyc_status_response(s: Any) -> APIKYCStatusResponse:
 class APIEscrowFeeHistoryResponse:
     user_escrow_id: str
     user_escrow_currency: str
-    user_escrow_qty: float
+    user_escrow_amount: float
     exch_id: str
     exch_escrow_id: str
     time_paid: int
 
-    def __init__(self, user_escrow_id: str, user_escrow_currency: str, user_escrow_qty: float, exch_id: str, exch_escrow_id: str, time_paid: int) -> None:
+    def __init__(self, user_escrow_id: str, user_escrow_currency: str, user_escrow_amount: float, exch_id: str, exch_escrow_id: str, time_paid: int) -> None:
         self.user_escrow_id = user_escrow_id
         self.user_escrow_currency = user_escrow_currency
-        self.user_escrow_qty = user_escrow_qty
+        self.user_escrow_amount = user_escrow_amount
         self.exch_id = exch_id
         self.exch_escrow_id = exch_escrow_id
         self.time_paid = time_paid
@@ -130,20 +130,20 @@ class APIEscrowFeeHistoryResponse:
         assert isinstance(obj, dict)
         user_escrow_id = from_str(obj.get("userEscrowId"))
         user_escrow_currency = from_str(obj.get("userEscrowCurrency"))
-        user_escrow_qty = from_float(obj.get("userEscrowQty"))
+        user_escrow_amount = from_float(obj.get("userEscrowAmount"))
         exch_id = from_str(obj.get("exchId"))
         exch_escrow_id = from_str(obj.get("exchEscrowId"))
         time_paid = from_int(obj.get("timePaid"))
-        return APIEscrowFeeHistoryResponse(user_escrow_id, user_escrow_currency, user_escrow_qty, exch_id, exch_escrow_id, time_paid)
+        return APIEscrowFeeHistoryResponse(user_escrow_id, user_escrow_currency, user_escrow_amount, exch_id, exch_escrow_id, time_paid)
 
 
-def fees_from_dict(s: Any) -> List[APIEscrowFeeHistoryResponse]:
+def api_escrow_fee_history_from_dict(s: Any) -> List[APIEscrowFeeHistoryResponse]:
     return from_list(APIEscrowFeeHistoryResponse.from_dict, s)
 
 
 class APIUserEscrowElement:
     exch_id: str
-    user_escrow_id: int
+    user_escrow_id: str
     escrow_address: str
     state: str
     amount: float
@@ -154,7 +154,7 @@ class APIUserEscrowElement:
     time_created: int
     time_closed: int
 
-    def __init__(self, exch_id: str, user_escrow_id: int, escrow_address: str, state: str, amount: float, available_to_trade: float, user_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
+    def __init__(self, exch_id: str, user_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, user_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
         self.exch_id = exch_id
         self.user_escrow_id = user_escrow_id
         self.escrow_address = escrow_address
@@ -184,16 +184,16 @@ class APIUserEscrowElement:
         return APIUserEscrowElement(exch_id, user_escrow_id, escrow_address, state, amount, available_to_trade, user_escrow_currency, trades, amount_sent_to_reserve, time_created, time_closed)
 
 
-def api_user_escrow_details_from_dict(s: Any) -> List[APIUserEscrowElement]:
+def api_user_escrow_from_dict(s: Any) -> List[APIUserEscrowElement]:
     return from_list(APIUserEscrowElement.from_dict, s)
 
 
 class APINewUserEscrowResponse:
-    user_escrow_id: int
+    user_escrow_id: str
     escrow_address: str
     amount_to_fund: float
 
-    def __init__(self, user_escrow_id: int, escrow_address: str, amount_to_fund: float) -> None:
+    def __init__(self, user_escrow_id: str, escrow_address: str, amount_to_fund: float) -> None:
         self.user_escrow_id = user_escrow_id
         self.escrow_address = escrow_address
         self.amount_to_fund = amount_to_fund
@@ -223,7 +223,7 @@ class APICloseEscrowResponse:
         return APICloseEscrowResponse(close)
 
 
-def api_close_user_escrow_rsponse_from_dict(s: Any) -> APICloseEscrowResponse:
+def api_close_escrow_response_from_dict(s: Any) -> APICloseEscrowResponse:
     return APICloseEscrowResponse.from_dict(s)
 
 
@@ -255,7 +255,7 @@ def api_escrow_fee_response_from_dict(s: Any) -> List[APIEscrowFeeResponse]:
 
 class APIExchangeEscrowElement:
     exch_id: str
-    exch_escrow_id: int
+    exch_escrow_id: str
     escrow_address: str
     state: str
     amount: float
@@ -266,7 +266,7 @@ class APIExchangeEscrowElement:
     time_created: int
     time_closed: int
 
-    def __init__(self, exch_id: str, exch_escrow_id: int, escrow_address: str, state: str, amount: float, available_to_trade: float, exch_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
+    def __init__(self, exch_id: str, exch_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, exch_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
         self.exch_id = exch_id
         self.exch_escrow_id = exch_escrow_id
         self.escrow_address = escrow_address
@@ -300,6 +300,30 @@ def api_exchange_escrow_from_dict(s: Any) -> List[APIExchangeEscrowElement]:
     return from_list(APIExchangeEscrowElement.from_dict, s)
 
 
+class APINewExchangeEscrowResponse:
+    exch_escrow_id: str
+    escrow_address: str
+    escrow_fee_paid: float
+
+    def __init__(self, exch_escrow_id: str, escrow_address: str, escrow_fee_paid: float) -> None:
+        self.exch_escrow_id = exch_escrow_id
+        self.escrow_address = escrow_address
+        self.escrow_fee_paid = escrow_fee_paid
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'APINewExchangeEscrowResponse':
+        assert isinstance(obj, dict)
+        exch_escrow_id = from_str(obj.get("exchEscrowId"))
+        escrow_address = from_str(obj.get("escrowAddress"))
+        escrow_fee_paid = from_float(obj.get("escrowFeePaid"))
+        return APINewExchangeEscrowResponse(exch_escrow_id, escrow_address, escrow_fee_paid)
+
+
+def api_new_exchange_escrow_response_from_dict(s: Any) -> APINewExchangeEscrowResponse:
+    return APINewExchangeEscrowResponse.from_dict(s)
+
+
+
 class ApiOrderExecutedResponse:
     executed: bool
 
@@ -313,13 +337,29 @@ class ApiOrderExecutedResponse:
         return ApiOrderExecutedResponse(executed)
 
 
-def api_new_exchange_escrow_request_from_dict(s: Any) -> ApiOrderExecutedResponse:
+def api_order_executed_response_from_dict(s: Any) -> ApiOrderExecutedResponse:
     return ApiOrderExecutedResponse.from_dict(s)
+
+class ApiOrderCanceledResponse:
+    canceled: bool
+
+    def __init__(self, canceled: bool) -> None:
+        self.canceled = canceled
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'ApiOrderCanceledResponse':
+        assert isinstance(obj, dict)
+        canceled = from_bool(obj.get("canceled"))
+        return ApiOrderCanceledResponse(canceled)
+
+
+def api_order_canceled_response_from_dict(s: Any) -> ApiOrderCanceledResponse:
+    return ApiOrderCanceledResponse.from_dict(s)
 
 
 class APIOrderResponseElement:
     order_id: str
-    type: str
+    orderType: str
     state: str
     symbol: str
     price: float
@@ -329,11 +369,11 @@ class APIOrderResponseElement:
     user_escrow_id: str
     exch_escrow_id: str
     time_created: int
-    time_closed: float
+    time_closed: int
 
-    def __init__(self, order_id: str, type: str, state: str, symbol: str, price: float, user_escrow_amount: float, exch_escrow_amount: float, side: str, user_escrow_id: str, exch_escrow_id: str, time_created: int, time_closed: float) -> None:
+    def __init__(self, order_id: str, orderType: str, state: str, symbol: str, price: float, user_escrow_amount: float, exch_escrow_amount: float, side: str, user_escrow_id: str, exch_escrow_id: str, time_created: int, time_closed: int) -> None:
         self.order_id = order_id
-        self.type = type
+        self.orderType = orderType
         self.state = state
         self.symbol = symbol
         self.price = price
@@ -349,7 +389,7 @@ class APIOrderResponseElement:
     def from_dict(obj: Any) -> 'APIOrderResponseElement':
         assert isinstance(obj, dict)
         order_id = from_str(obj.get("orderId"))
-        type = from_str(obj.get("type"))
+        orderType = from_str(obj.get("type"))
         state = from_str(obj.get("state"))
         symbol = from_str(obj.get("symbol"))
         price = from_float(obj.get("price"))
@@ -360,8 +400,75 @@ class APIOrderResponseElement:
         exch_escrow_id = from_str(obj.get("exchEscrowId"))
         time_created = from_int(obj.get("timeCreated"))
         time_closed = from_float(obj.get("timeClosed"))
-        return APIOrderResponseElement(order_id, type, state, symbol, price, user_escrow_amount, exch_escrow_amount, side, user_escrow_id, exch_escrow_id, time_created, time_closed)
+        return APIOrderResponseElement(order_id, orderType, state, symbol, price, user_escrow_amount, exch_escrow_amount, side, user_escrow_id, exch_escrow_id, time_created, time_closed)
 
 
-def api_order_response_from_dict(s: Any) -> List[APIOrderResponseElement]:
+def api_order_query_response_from_dict(s: Any) -> List[APIOrderResponseElement]:
     return from_list(APIOrderResponseElement.from_dict, s)
+
+
+class APIPlaceOrderResponse:
+    order_id: str
+    user_escrow_id: str
+    exch_escrow_id: str
+    buy_currency: str
+    sell_currency: str
+    price: float
+    buy_amount: float
+    sell_amount: float
+    quote_expiry: int
+
+    def __init__(self, order_id: str, user_escrow_id: str, exch_escrow_id: str, buy_currency: str, sell_currency: str, price: float, buy_amount: float, sell_amount: float, quote_expiry: int) -> None:
+        self.order_id = order_id
+        self.user_escrow_id = user_escrow_id
+        self.exch_escrow_id = exch_escrow_id
+        self.buy_currency = buy_currency
+        self.sell_currency = sell_currency
+        self.price = price
+        self.buy_amount = buy_amount
+        self.sell_amount = sell_amount
+        self.quote_expiry = quote_expiry
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'APIPlaceOrderResponse':
+        assert isinstance(obj, dict)
+        order_id = from_str(obj.get("orderId"))
+        user_escrow_id = from_str(obj.get("userEscrowId"))
+        exch_escrow_id = from_str(obj.get("exchEscrowId"))
+        buy_currency = from_str(obj.get("buyCurrency"))
+        sell_currency = from_str(obj.get("sellCurrency"))
+        price = from_float(obj.get("price"))
+        buy_amount = from_float(obj.get("buyAmount"))
+        sell_amount = from_float(obj.get("sellAmount"))
+        quote_expiry = from_int(obj.get("quoteExpiry"))
+        return APIPlaceOrderResponse(order_id, user_escrow_id, exch_escrow_id, buy_currency, sell_currency, price, buy_amount, sell_amount, quote_expiry)
+
+
+def api_place_order_response_from_dict(s: Any) -> APIPlaceOrderResponse:
+    return APIPlaceOrderResponse.from_dict(s)
+
+
+class APIOrderInquiryResponse:
+    buy_currency: str
+    sell_currency: str
+    buy_amount: float
+    sell_amount: float
+
+    def __init__(self, buy_currency: str, sell_currency: str, buy_amount: float, sell_amount: float) -> None:
+        self.buy_currency = buy_currency
+        self.sell_currency = sell_currency
+        self.buy_amount = buy_amount
+        self.sell_amount = sell_amount
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'APIOrderInquiryResponse':
+        assert isinstance(obj, dict)
+        buy_currency = from_str(obj.get("buyCurrency"))
+        sell_currency = from_str(obj.get("sellCurrency"))
+        buy_amount = from_float(obj.get("buyAmount"))
+        sell_amount = from_float(obj.get("sellAmount"))
+        return APIOrderInquiryResponse(buy_currency, sell_currency, buy_amount, sell_amount)
+
+
+def api_order_inquiry_response_from_dict(s: Any) -> APIOrderInquiryResponse:
+    return APIOrderInquiryResponse.from_dict(s)

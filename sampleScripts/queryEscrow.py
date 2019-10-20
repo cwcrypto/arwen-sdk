@@ -59,8 +59,8 @@ config.loadConfig(configFilePath)
 escrow = None
 
 if(args.id != None):
-    escrow = client.getEscrowById(sf.EscrowType(args.type), args.id)
+    escrow = client.queryEscrowById(sf.EscrowType(args.type), args.id)
     print(escrow.toString())
 else:
-    escrow = client.queryEscrows(sf.EscrowType(args.type), isOpen=args.open, limit=args.limit, startTime=args.startTime)
+    escrow = client.queryEscrows(sf.EscrowType(args.type), isOpen=args.open, limit=args.limit, fromTime=args.startTime)
     print(escrow)
