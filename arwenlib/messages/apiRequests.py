@@ -78,28 +78,6 @@ def client_refresh_kyc_response_to_dict(x: APIKYCStatusRequest) -> Any:
     return to_class(APIKYCStatusRequest, x)
 
 
-class APIRegisterKeys:
-    exch_id: str
-    api_key: str
-    api_secret: str
-
-    def __init__(self, exch_id: str, api_key: str, api_secret: str) -> None:
-        self.exch_id = exch_id
-        self.api_key = api_key
-        self.api_secret = api_secret
-    
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["exch_id"] = from_str(self.exch_id)
-        result["api_key"] = from_str(self.api_key)
-        result["api_secret"] = from_str(self.api_secret)
-        return result
-
-
-def api_register_keys_to_dict(x: APIRegisterKeys) -> Any:
-    return to_class(APIRegisterKeys, x)
-
-
 class APIHistoryRequest:
     from_time: int
 
@@ -330,7 +308,7 @@ class APIPlaceOrderRequest:
         result["type"] = from_str(self.orderType)
         result["symbol"] = from_str(self.symbol)
         result["timeInForce"] = from_str(self.time_in_force)
-        result["price"] = from_float(self.price)
+        result["price"] = from_union([from_float, from_none], self.price)
         result["amount"] = from_float(self.amount)
         result["side"] = from_str(self.side)
         result["userEscrowId"] = from_str(self.user_escrow_id)

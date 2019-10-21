@@ -34,7 +34,7 @@ class ArwenClient():
         resp = requests.post(f'{self.url}{endpoint}', json=params).text
 
         if(resp == None or resp == ''):
-            return None
+            raise SystemException("Received null response from arwen-sdk", "")
 
         parsedResp = baseResponse.api_base_response_from_dict(json.loads(resp))
 
@@ -74,15 +74,6 @@ class ArwenClient():
         return self.sendRequest(endpoint)
 
 
-    def registerApiKeys(self, apiKey, apiSecret, exchId: sf.Exchange):
-
-        endpoint = '/kyc/register'
-
-        requestObj = apiRequests.APIRegisterKeys(exchId.value, apiKey, apiSecret)
-        response = self.sendRequest(endpoint, requestObj.to_dict())
-
-        return apiResponses.api_key_reg_response_from_dict(response)
-
     def getOAuthUrl(self, exchId: sf.Exchange):
 
         endpoint = '/kyc/oauth'
@@ -110,16 +101,13 @@ class ArwenClient():
         if not isinstance(escrowType, sf.EscrowType):
             raise AttributeError('escrowType must be assigned for queryEscrows()')
 
-        responseObj = self.queryEscrows(escrowType, escrowId)
+        escrowList = self.queryEscrows(escrowType=escrowType, escrowId=escrowId)
 
-        if(escrowType == sf.EscrowType.USER):
-            escrow = UserEscrowDetails()
-        else:
-            escrow = ExchEscrowDetails()
-            
-        escrow.setFromQuery(responseObj[0])
+        if(len(escrowList) == 0):
+            return None
 
-        return escrow
+        return escrowList[0]
+
 
     # Escrow Management
     # Returns list of escrowDetails
@@ -128,7 +116,7 @@ class ArwenClient():
         escrowType, 
         escrowId = None, 
         fromTime = None, 
-        isOpen = True, 
+        isFinal = None, 
         limit = 1000, 
         exchId = None) -> list():
 
@@ -137,20 +125,30 @@ class ArwenClient():
 
         endpoint = f'/{escrowType.value}escrow/query'
 
-        queryParams = apiRequests.APIFilterRequest(escrowId, fromTime, limit, exchId.value, not isOpen)
+        exchIdString = ""
+        if(exchId == None): exchIdString = None
+        elif(isinstance(sf.Exchange, exchId)): exchIdString = exchId.value
+        elif(isinstance(str, exchId)): exchIdString = exchId
+        else: raise AssertionError("exchId is not a enum or string or null")
 
-        response = self.sendRequest(endpoint, queryParams.to_dict)
+        request = apiRequests.APIFilterRequest(escrowId, fromTime, limit, exchIdString, isFinal)
+
+        response = self.sendRequest(endpoint, request.to_dict())
         responseObj = None
+
+        escrowList = list()
 
         if(escrowType == sf.EscrowType.USER):
             responseObj = apiResponses.api_user_escrow_from_dict(response)
+            escrowList = [UserEscrowDetails().setFromQuery(responseObj[ii]) for ii in range(len(responseObj))]
         else:
             responseObj = apiResponses.api_exchange_escrow_from_dict(response)
+            escrowList = [ExchEscrowDetails().setFromQuery(responseObj[ii]) for ii in range(len(responseObj))]
 
-        if(len(responseObj) == 0):
+        if(len(responseObj) == 0 or responseObj == None):
             return None
 
-        return responseObj
+        return escrowList
 
 
     def updateExchangeEscrow(self, escrow: apiResponses.APIExchangeEscrowElement) -> ExchEscrowDetails:
@@ -165,20 +163,23 @@ class ArwenClient():
         self,
         reserveAddress: str,
         exchId: sf.Exchange,
-        currency: sf.Blockchain, 
+        userEscrowCurrency: sf.Blockchain, 
         expiryTime: int, 
         amount: float) -> UserEscrowDetails:
 
         endpoint = '/userescrow/create'
 
-        newUserEscrowRequest = apiRequests.APINewUserEscrowRequest(exchId.value, currency.value, amount, reserveAddress, expiryTime)
+        addressToUse = self.reserveAddressParser(reserveAddress, userEscrowCurrency)
+
+        newUserEscrowRequest = apiRequests.APINewUserEscrowRequest(exchId.value, userEscrowCurrency.value, amount, addressToUse, expiryTime)
 
         response = self.sendRequest(endpoint, newUserEscrowRequest.to_dict())
         responseObj = apiResponses.api_new_user_escrow_response_from_dict(response)
 
         userEscrow = UserEscrowDetails()
-        userEscrow.setFromNewEscrowReq(newUserEscrowRequest)
-        userEscrow.setFromNewEscrowResp(responseObj)
+
+        queryResponse = self.queryEscrowById(sf.EscrowType.USER, responseObj.user_escrow_id)
+        userEscrow.setFromQuery(queryResponse)
 
         return userEscrow        
 
@@ -211,14 +212,17 @@ class ArwenClient():
 
         endpoint = '/exchescrow/create'
 
-        request = apiRequests.APINewExchangeEscrowRequest(exchId.value, exchEscrowCurrency.value, amount, expiryTime, reserveAddress, userEscrowId)
+        addressToUse = self.reserveAddressParser(reserveAddress, exchEscrowCurrency)
+
+        request = apiRequests.APINewExchangeEscrowRequest(exchId.value, exchEscrowCurrency.value, amount, expiryTime, addressToUse, userEscrowId)
         response = self.sendRequest(endpoint, request.to_dict())
         
         responseObj = apiResponses.api_new_exchange_escrow_response_from_dict(response)
 
         exchEscrow = ExchEscrowDetails()
-        exchEscrow.setFromNewEscrowReq(requests)
-        exchEscrow.setFromNewEscrowResp(responseObj)
+
+        queryResponse = self.queryEscrowById(sf.EscrowType.EXCH, responseObj.exch_escrow_id)
+        exchEscrow.setFromQuery(queryResponse)
 
         return exchEscrow
 
@@ -270,25 +274,34 @@ class ArwenClient():
 
 
     def queryOrdersById(self, orderId: str) -> OrderDetails:
-        return (self.queryOrders(orderId))[0]
+        return (self.queryOrders(orderId=orderId))[0]
 
 
     def queryOrders(
         self,
         orderId = None, 
         fromTime = None, 
-        isOpen = True, 
+        isFinal = None, 
         limit = 1000, 
         exchId = None) -> list():
 
         endpoint = '/orders/query'
 
-        request = apiRequests.APIFilterRequest(orderId, fromTime, limit, exchId.value, not isOpen)
+        exchIdString = ""
+        
+        if(exchId == None): exchIdString = None
+        elif(isinstance(sf.Exchange, exchId)): exchIdString = exchId.value
+        elif(isinstance(str, exchId)): exchIdString = exchId
+        else: raise AssertionError("exchId is not a enum or string or null")
+
+        request = apiRequests.APIFilterRequest(orderId, fromTime, limit, exchIdString, isFinal)
         response = self.sendRequest(endpoint, request.to_dict())
 
         responseObj = apiResponses.api_order_query_response_from_dict(response)
-        
-        return responseObj
+
+        orderList = [OrderDetails().setFromQuery(responseObj[ii]) for ii in range(len(responseObj))]
+
+        return orderList
 
 
     def newSellOrder(self, 
@@ -301,8 +314,10 @@ class ArwenClient():
         symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency)
 
         request = apiRequests.APIPlaceOrderRequest(sf.OrderType.RFQ.value, symbol.toString(), sf.TimeInForce.FOK.value, None, amount, sf.Side.SELL.value, userEscrow.escrowId, exchEscrow.escrowId)
+        
+        import pdb; pdb.set_trace()
 
-        response = self.sendRequest(endpoint, requests)
+        response = self.sendRequest(endpoint, request.to_dict())
         responseObj = apiResponses.api_place_order_response_from_dict(response)
 
         order = OrderDetails()
@@ -330,7 +345,7 @@ class ArwenClient():
         order = OrderDetails()
 
         order.updateOrderFromRequest(request)
-        order.updateOrderFromRequest(responseObj)
+        order.updateOrderFromResponse(responseObj)
 
         return order
 
@@ -381,3 +396,13 @@ class ArwenClient():
         responseObj = apiResponses.api_order_inquiry_response_from_dict(response)
 
         return responseObj
+
+    def reserveAddressParser(self, resvAddress, blockchain: sf.Blockchain) -> str:
+        if(isinstance(resvAddress, str)):
+            return resvAddress
+        
+        if(isinstance(resvAddress, int) and blockchain == sf.Blockchain.ETH):
+            return hex(resvAddress)
+        
+        raise TypeError("resvAddress must be a string")
+        

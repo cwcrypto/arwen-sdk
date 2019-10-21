@@ -37,6 +37,7 @@ class Blockchain(enum.Enum):
     LTC = 'LTC'
     BCH = 'BCH'
     ETH = 'ETH'
+    UNKNOWN = 'UNKNOWN'
 
 class EscrowState(enum.Enum):
     OPENING = 'OPENING'
@@ -48,7 +49,7 @@ class EscrowState(enum.Enum):
 class OrderState(enum.Enum):
     OPEN = 'OPEN'
     EXECUTED = 'EXECUTED'
-    CANCELD = 'CANCELED'
+    CANCELLED = 'CANCELLED'
     EXPIRED = 'EXPIRED'
     UNKNOWN = 'UNKNOWN'
 
@@ -83,7 +84,7 @@ def waitForEscowToOpen(escrow, client):
         return False
 
     while(escrow.state != EscrowState.OPEN):
-        escrow = client.updateEscrowDetails(escrow)
+        escrow = client.queryEscrowById(escrow.escrowType, escrow.escrowId)
         print('Waiting 60 seconds before next poll...')
         time.sleep(60)
 

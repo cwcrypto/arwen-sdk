@@ -29,10 +29,9 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-order = client.queryOrdersById(args.id)
+cancel = client.cancelById(args.id)
+print(f'canceled: {cancel}')
 
+order = client.queryOrdersById(args.id)
 print(order.toString())
 
-cancel = client.cancelById(order)
-
-print(cancel)

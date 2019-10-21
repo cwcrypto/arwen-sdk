@@ -18,6 +18,7 @@ parser.add_argument('--id',
     '-i',
     type=str,
     required=False,
+    default=None,
     help='Id of user escrow you find')
 
 parser.add_argument('--type',
@@ -60,7 +61,17 @@ escrow = None
 
 if(args.id != None):
     escrow = client.queryEscrowById(sf.EscrowType(args.type), args.id)
-    print(escrow.toString())
+    print(escrow.__dict__)
+
+    if(escrow == None):
+        print('No escrows fit your query')
+        exit(0)
+
 else:
-    escrow = client.queryEscrows(sf.EscrowType(args.type), isOpen=args.open, limit=args.limit, fromTime=args.startTime)
-    print(escrow)
+    escrow = client.queryEscrows(escrowType=sf.EscrowType(args.type), isFinal=args.open, limit=args.limit, fromTime=args.startTime)
+
+    [print(e.__dict__) for e in escrow]
+
+    if(len(escrow) == 0):
+        print('No escrows fit your query')
+        exit(0)

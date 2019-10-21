@@ -38,8 +38,8 @@ class OrderDetails:
     def updateOrderFromRequest(self, request: apiRequests.APIPlaceOrderRequest):
         self.userEscrowId = request.user_escrow_id
         self.exchEscrowId = request.exch_escrow_id
-        self.side = request.side
-        self.symbol = request.symbol
+        self.side = sf.Side(request.side)
+        self.symbol = sf.Symbol.fromString(request.symbol)
         self.timeCreated = int(time())
 
     def updateOrderFromResponse(self, response: apiResponses.APIPlaceOrderResponse):

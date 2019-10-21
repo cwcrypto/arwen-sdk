@@ -24,19 +24,7 @@ class EscrowDetails:
     timeClosed: int
 
     def __init__(self):
-        self.exchId = None
-        self.escrowId = None
-        self.escrowAddress = None
-        self.state = sf.EscrowState.UNKNOWN
-        self.currency = None
-        self.amount = 0
-        self.expiryTime = 0
-        self.availableToTrade = -1
-        self.trades = list()
-        self.amountSentToUserReserve = -1
-        self.timeCreated = -1
-        self.timeClosed = -1
-        self.escrowType = None
+        pass
 
     def setFromNewEscrowReq(self, request):
         if isinstance(request, apiRequests.APINewUserEscrowRequest):

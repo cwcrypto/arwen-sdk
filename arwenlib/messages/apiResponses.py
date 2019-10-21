@@ -28,6 +28,19 @@ def to_float(x: Any) -> float:
     return x
 
 
+def from_none(x: Any) -> Any:
+    assert x is None
+    return x
+
+
+def from_union(fs, x):
+    for f in fs:
+        try:
+            return f(x)
+        except:
+            pass
+    assert False
+
 def from_list(f: Callable[[Any], T], x: Any) -> List[T]:
     assert isinstance(x, list)
     return [f(y) for y in x]
@@ -53,23 +66,6 @@ class APIHdseedResponse:
 
 def api_hdseed_response_from_dict(s: Any) -> APIHdseedResponse:
     return APIHdseedResponse.from_dict(s)
-
-
-class APIKeyRegResponse:
-    status: bool
-
-    def __init__(self, status: bool) -> None:
-        self.status = status
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'APIKeyRegResponse':
-        assert isinstance(obj, dict)
-        status = from_bool(obj.get("status"))
-        return APIKeyRegResponse(status)
-
-
-def api_key_reg_response_from_dict(s: Any) -> APIKeyRegResponse:
-    return APIKeyRegResponse.from_dict(s)
 
 
 class APIOuathResponse:
@@ -171,14 +167,14 @@ class APIUserEscrowElement:
     def from_dict(obj: Any) -> 'APIUserEscrowElement':
         assert isinstance(obj, dict)
         exch_id = from_str(obj.get("exchId"))
-        user_escrow_id = int(from_str(obj.get("userEscrowId")))
-        escrow_address = from_str(obj.get("escrowAddress"))
+        user_escrow_id = from_str(obj.get("userEscrowId"))
+        escrow_address = from_union([from_str, from_none], obj.get("escrowAddress"))
         state = from_str(obj.get("state"))
         amount = from_float(obj.get("amount"))
         available_to_trade = from_float(obj.get("availableToTrade"))
         user_escrow_currency = from_str(obj.get("userEscrowCurrency"))
-        trades = from_list(lambda x: int(from_str(x)), obj.get("trades"))
-        amount_sent_to_reserve = from_float(obj.get("amountSentToReserve"))
+        trades = from_list(lambda x: from_str(x), obj.get("trades"))
+        amount_sent_to_reserve = from_float(obj.get("amountSentToUserReserve"))
         time_created = from_int(obj.get("timeCreated"))
         time_closed = from_int(obj.get("timeClosed"))
         return APIUserEscrowElement(exch_id, user_escrow_id, escrow_address, state, amount, available_to_trade, user_escrow_currency, trades, amount_sent_to_reserve, time_created, time_closed)
@@ -190,21 +186,21 @@ def api_user_escrow_from_dict(s: Any) -> List[APIUserEscrowElement]:
 
 class APINewUserEscrowResponse:
     user_escrow_id: str
-    escrow_address: str
+    funding_address: str
     amount_to_fund: float
 
-    def __init__(self, user_escrow_id: str, escrow_address: str, amount_to_fund: float) -> None:
+    def __init__(self, user_escrow_id: str, funding_address: str, amount_to_fund: float) -> None:
         self.user_escrow_id = user_escrow_id
-        self.escrow_address = escrow_address
+        self.funding_address = funding_address
         self.amount_to_fund = amount_to_fund
 
     @staticmethod
     def from_dict(obj: Any) -> 'APINewUserEscrowResponse':
         assert isinstance(obj, dict)
-        user_escrow_id = int(from_str(obj.get("userEscrowId")))
-        escrow_address = from_str(obj.get("escrowAddress"))
+        user_escrow_id = from_str(obj.get("userEscrowId"))
+        fundingAddress = from_str(obj.get("fundingAddress"))
         amount_to_fund = from_float(obj.get("amountToFund"))
-        return APINewUserEscrowResponse(user_escrow_id, escrow_address, amount_to_fund)
+        return APINewUserEscrowResponse(user_escrow_id, fundingAddress, amount_to_fund)
 
 
 def api_new_user_escrow_response_from_dict(s: Any) -> APINewUserEscrowResponse:
@@ -283,14 +279,14 @@ class APIExchangeEscrowElement:
     def from_dict(obj: Any) -> 'APIExchangeEscrowElement':
         assert isinstance(obj, dict)
         exch_id = from_str(obj.get("exchId"))
-        exch_escrow_id = int(from_str(obj.get("exchEscrowId")))
-        escrow_address = from_str(obj.get("escrowAddress"))
+        exch_escrow_id = from_str(obj.get("exchEscrowId"))
+        escrow_address = from_union([from_str, from_none], obj.get("escrowAddress"))
         state = from_str(obj.get("state"))
         amount = from_float(obj.get("amount"))
         available_to_trade = from_float(obj.get("availableToTrade"))
         exch_escrow_currency = from_str(obj.get("exchEscrowCurrency"))
-        trades = from_list(lambda x: int(from_str(x)), obj.get("trades"))
-        amount_sent_to_reserve = from_float(obj.get("amountSentToReserve"))
+        trades = from_list(lambda x: from_str(x), obj.get("trades"))
+        amount_sent_to_reserve = from_float(obj.get("amountSentToUserReserve"))
         time_created = from_int(obj.get("timeCreated"))
         time_closed = from_int(obj.get("timeClosed"))
         return APIExchangeEscrowElement(exch_id, exch_escrow_id, escrow_address, state, amount, available_to_trade, exch_escrow_currency, trades, amount_sent_to_reserve, time_created, time_closed)
@@ -314,7 +310,7 @@ class APINewExchangeEscrowResponse:
     def from_dict(obj: Any) -> 'APINewExchangeEscrowResponse':
         assert isinstance(obj, dict)
         exch_escrow_id = from_str(obj.get("exchEscrowId"))
-        escrow_address = from_str(obj.get("escrowAddress"))
+        escrow_address = from_union([from_str, from_none], obj.get("escrowAddress"))
         escrow_fee_paid = from_float(obj.get("escrowFeePaid"))
         return APINewExchangeEscrowResponse(exch_escrow_id, escrow_address, escrow_fee_paid)
 
@@ -437,7 +433,7 @@ class APIPlaceOrderResponse:
         exch_escrow_id = from_str(obj.get("exchEscrowId"))
         buy_currency = from_str(obj.get("buyCurrency"))
         sell_currency = from_str(obj.get("sellCurrency"))
-        price = from_float(obj.get("price"))
+        price = from_union([from_float, from_none], obj.get("price"))
         buy_amount = from_float(obj.get("buyAmount"))
         sell_amount = from_float(obj.get("sellAmount"))
         quote_expiry = from_int(obj.get("quoteExpiry"))

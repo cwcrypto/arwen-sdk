@@ -26,7 +26,7 @@ parser.add_argument('--blockchain',
     required=True,
     help='currency to open an escrow in')
 
-parser.add_argument('--exchid',
+parser.add_argument('--exchId',
     '-e',
     type=str,
     required=True,
@@ -38,7 +38,7 @@ parser.add_argument('--quantity',
     required=True,
     help='size of escrow in currency units')
 
-parser.add_argument('--expirytime',
+parser.add_argument('--expiryTime',
     '-t',
     type=float,
     required=True,
@@ -55,9 +55,9 @@ config.loadConfig(configFilePath)
 
 newUE = client.createNewUserEscrow(
     reserveAddress=args.resvAddr,
-    exchId=sf.Exchange(args.exchid),
-    currency=sf.Blockchain(args.blockchain),
-    expiryTime=sf.generateEscrowTimelock(args.expirytime),
+    exchId=sf.Exchange(args.exchId),
+    userEscrowCurrency=sf.Blockchain(args.blockchain),
+    expiryTime=sf.generateEscrowTimelock(args.expiryTime),
     amount=args.quantity)
 
 print(f'escrowId:           {newUE.escrowId}')

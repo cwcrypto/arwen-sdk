@@ -28,7 +28,7 @@ parser.add_argument('--exchEscrowId',
 
 parser.add_argument('--qty',
     '-q',
-    type=str,
+    type=float,
     required=True,
     help='amount to trade')
 
@@ -46,8 +46,6 @@ client = startArwenClient()
 config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
-
-client.registerApiKeys(config.testnetApiKey, config.testnetApiSecret, sf.Exchange.BINONCE)
 
 userEscrow = client.queryEscrowById(sf.EscrowType.USER, args.userEscrowId)
 exchEscrow = client.queryEscrowById(sf.EscrowType.EXCH, args.exchEscrowId)

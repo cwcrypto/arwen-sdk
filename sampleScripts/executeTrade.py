@@ -26,9 +26,8 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-execute = client.execute(args.id)
+execute = client.executeById(args.id)
+print(f'executed: {execute}')
 
 order = client.queryOrdersById(args.id)
-
-print(execute)
 print(order.toString())

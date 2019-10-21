@@ -26,7 +26,7 @@ parser.add_argument('--blockchain',
     required=True,
     help='currency to open an escrow in')
 
-parser.add_argument('--exchid',
+parser.add_argument('--exchId',
     '-e',
     type=str,
     required=True,
@@ -38,7 +38,7 @@ parser.add_argument('--quantity',
     required=True,
     help='size of escrow in currency units')
 
-parser.add_argument('--expirytime',
+parser.add_argument('--expiryTime',
     '-t',
     type=float,
     required=True,
@@ -59,14 +59,12 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-userEscrow = client.queryEscrowById(sf.EscrowType.USER, args.userEscrowId)
-
 newEE = client.createNewExchEscrow(
     reserveAddress=args.resvAddr,
-    userEscrowId=userEscrow,
-    exchId=sf.Exchange(args.exchid),
+    userEscrowId=args.userEscrowId,
+    exchId=sf.Exchange(args.exchId),
     exchEscrowCurrency=sf.Blockchain(args.blockchain),
-    expiryTime=sf.generateEscrowTimelock(args.expirytime),
+    expiryTime=sf.generateEscrowTimelock(args.expiryTime),
     amount=args.quantity)
 
 print(f'escrowId:           {newEE.escrowId}')

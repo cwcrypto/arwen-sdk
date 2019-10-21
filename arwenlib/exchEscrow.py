@@ -14,7 +14,7 @@ class ExchEscrowDetails(baseDetails.EscrowDetails):
         self.state = sf.EscrowState.UNKNOWN
 
     def setFromQuery(self, queryResponse: apiResponses.APIExchangeEscrowElement):
-        self.exchId = queryResponse.exch_id
+        self.exchId = sf.Exchange(queryResponse.exch_id)
         self.escrowId = queryResponse.exch_escrow_id
         self.escrowAddress = queryResponse.escrow_address
         self.state = sf.EscrowState(queryResponse.state)
@@ -26,8 +26,12 @@ class ExchEscrowDetails(baseDetails.EscrowDetails):
         self.timeCreated = queryResponse.time_created
         self.timeClosed = queryResponse.time_closed
 
+        return self
+
     def setFromNewEscrowResp(self, resp: apiResponses.APINewExchangeEscrowResponse):
         self.escrowId = resp.exch_escrow_id
         self.escrowAddress = resp.escrow_address
         self.escrowFeePaid = resp.escrow_fee_paid
         self.state = sf.EscrowState.OPENING
+
+        return self
