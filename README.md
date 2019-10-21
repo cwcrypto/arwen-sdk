@@ -1,5 +1,3 @@
-**DOWNLOAD LINKS DOWN UNTIL MONDAY MORNING**
-
 # arwenlib
 Python3.6.8 interface example for interacting with Arwen Client. Arwen Client is a dockerized version of the Arwen application that enables users to create escrows and perform atomic swaps programmatically. 
 

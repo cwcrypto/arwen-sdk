@@ -1,8 +1,8 @@
-wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-api-external-testnet.tar
+wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-sdk-external-testnet-0-1.tar
 
 docker load < arwen-api-external-testnet.tar
 
-wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-api-external-mainnet.tar
+wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-sdk-external-mainnet-0-1.tar
 
 docker load < arwen-api-external-mainnet.tar
 
