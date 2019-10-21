@@ -137,7 +137,7 @@ class ArwenClient():
 
         endpoint = f'/{escrowType.value}escrow/query'
 
-        queryParams = apiRequests.APIFilterRequest(escrowId, fromTime, limit, exchId, not isOpen)
+        queryParams = apiRequests.APIFilterRequest(escrowId, fromTime, limit, exchId.value, not isOpen)
 
         response = self.sendRequest(endpoint, queryParams.to_dict)
         responseObj = None
@@ -164,14 +164,14 @@ class ArwenClient():
     def createNewUserEscrow(
         self,
         reserveAddress: str,
-        exchId: str,
+        exchId: sf.Exchange,
         currency: sf.Blockchain, 
         expiryTime: int, 
         amount: float) -> UserEscrowDetails:
 
         endpoint = '/userescrow/create'
 
-        newUserEscrowRequest = apiRequests.APINewUserEscrowRequest(exchId, currency, amount, reserveAddress, expiryTime)
+        newUserEscrowRequest = apiRequests.APINewUserEscrowRequest(exchId.value, currency.value, amount, reserveAddress, expiryTime)
 
         response = self.sendRequest(endpoint, newUserEscrowRequest.to_dict())
         responseObj = apiResponses.api_new_user_escrow_response_from_dict(response)
@@ -202,7 +202,7 @@ class ArwenClient():
     # Exchange Escrow Management
     def createNewExchEscrow(
         self,
-        exchId: str,
+        exchId: sf.Exchange,
         reserveAddress: str,
         exchEscrowCurrency: sf.Blockchain,
         amount: float,
@@ -211,7 +211,7 @@ class ArwenClient():
 
         endpoint = '/exchescrow/create'
 
-        request = apiRequests.APINewExchangeEscrowRequest(exchId, exchEscrowCurrency, amount, expiryTime, reserveAddress, userEscrowId)
+        request = apiRequests.APINewExchangeEscrowRequest(exchId.value, exchEscrowCurrency.value, amount, expiryTime, reserveAddress, userEscrowId)
         response = self.sendRequest(endpoint, request.to_dict())
         
         responseObj = apiResponses.api_new_exchange_escrow_response_from_dict(response)
@@ -225,7 +225,7 @@ class ArwenClient():
 
     def priceExchEscrow(
         self,
-        exchId: str,
+        exchId: sf.Exchange,
         exchEscrowCurrency: sf.Blockchain,
         amount: float,
         expiryTime: int,
@@ -233,7 +233,7 @@ class ArwenClient():
         
         endpoint = '/exchescrow/price'
 
-        request = apiRequests.APIPriceExchangeEscrowRequest(exchId, exchEscrowCurrency, amount, expiryTime, userCurrencies)
+        request = apiRequests.APIPriceExchangeEscrowRequest(exchId.value, exchEscrowCurrency.value, amount, expiryTime, userCurrencies)
         response = self.sendRequest(endpoint, request.to_dict())
         
         responseObj = apiResponses.api_escrow_fee_response_from_dict(response)
@@ -283,7 +283,7 @@ class ArwenClient():
 
         endpoint = '/orders/query'
 
-        request = apiRequests.APIFilterRequest(orderId, fromTime, limit, exchId, not isOpen)
+        request = apiRequests.APIFilterRequest(orderId, fromTime, limit, exchId.value, not isOpen)
         response = self.sendRequest(endpoint, request.to_dict())
 
         responseObj = apiResponses.api_order_query_response_from_dict(response)

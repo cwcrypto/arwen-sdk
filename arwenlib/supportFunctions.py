@@ -53,7 +53,7 @@ class OrderState(enum.Enum):
     UNKNOWN = 'UNKNOWN'
 
 class Symbol(): 
-    def __init__(self, quoteCurrency, baseCurrency):
+    def __init__(self, quoteCurrency: Blockchain, baseCurrency: Blockchain):
         self.quote = quoteCurrency # should be Blockchain
         self.base = baseCurrency # should be Blockchain
         self.separator = '-'
@@ -67,7 +67,7 @@ class Symbol():
         return f'{self.quote.value}{self.separator}{self.base.value}'
 
 
-def generateEscrowTimelock(days):
+def generateEscrowTimelock(days: float):
     if(days < 1.0):
         raise AttributeError('Timelock can not be less than 1 day', days)
 
