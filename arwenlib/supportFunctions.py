@@ -6,7 +6,6 @@ import enum
 import time
 
 from . import ArwenClient as Arwen 
-from . import baseEscrowDetails as baseDetails
 
 
 class EscrowType(enum.Enum): 
@@ -79,9 +78,6 @@ def waitForEscowToOpen(escrow, client):
 
     if not isinstance(client, Arwen.ArwenClient):
         raise AttributeError('client passed is not an ArwenClient')
-    
-    if not isinstance(escrow, baseDetails.EscrowDetails):
-        raise AttributeError('invalid escrow object passed')
 
     if(escrow.state == EscrowState.CLOSED or escrow.state == EscrowState.UNKNOWN):
         return False

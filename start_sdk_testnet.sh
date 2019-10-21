@@ -1,1 +1,1 @@
-docker run --rm --name arwen -p 5000:5000 -v arwen-database:/arwenDatabase arwen-sdk:external-testnet
+docker run --rm --name arwen -p 5000:5000 -v arwen-database:/arwenDatabase arwen-sdk/external-testnet
