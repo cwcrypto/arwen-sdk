@@ -1,1 +1,1 @@
-docker run --rm --name arwen -p 5000:5000 -v arwen-database:/arwenDatabase arwen-sdk/external-mainnet:0.1
+docker run --rm --name arwen -p 5000:5000 -v arwen-database:/arwenDatabase arwen-sdk/beta-mainnet:0.19.0

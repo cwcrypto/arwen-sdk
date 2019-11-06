@@ -23,7 +23,7 @@ class ArwenClient():
     url: str
 
     def __init__(self, ip, port):
-        self.url = f'http://{ip}:{port}/api/v1'
+        self.url = f'http://{ip}:{port}/sdk/v1'
 
 
     def sendRequest(self, endpoint, params = None):
