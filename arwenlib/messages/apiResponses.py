@@ -145,12 +145,14 @@ class APIUserEscrowElement:
     amount: float
     available_to_trade: float
     user_escrow_currency: str
-    trades: List[int]
-    amount_sent_to_reserve: float
+    trades: List[str]
+    amount_sent_to_user_reserve: float
     time_created: int
     time_closed: int
+    amount_to_fund: float
+    funding_address: str
 
-    def __init__(self, exch_id: str, user_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, user_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
+    def __init__(self, exch_id: str, user_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, user_escrow_currency: str, trades: List[str], amount_sent_to_user_reserve: float, time_created: int, time_closed: int, amount_to_fund: float, funding_address: str) -> None:
         self.exch_id = exch_id
         self.user_escrow_id = user_escrow_id
         self.escrow_address = escrow_address
@@ -159,26 +161,29 @@ class APIUserEscrowElement:
         self.available_to_trade = available_to_trade
         self.user_escrow_currency = user_escrow_currency
         self.trades = trades
-        self.amount_sent_to_reserve = amount_sent_to_reserve
+        self.amount_sent_to_user_reserve = amount_sent_to_user_reserve
         self.time_created = time_created
         self.time_closed = time_closed
+        self.amount_to_fund = amount_to_fund
+        self.funding_address = funding_address
 
     @staticmethod
     def from_dict(obj: Any) -> 'APIUserEscrowElement':
         assert isinstance(obj, dict)
         exch_id = from_str(obj.get("exchId"))
         user_escrow_id = from_str(obj.get("userEscrowId"))
-        escrow_address = from_union([from_str, from_none], obj.get("escrowAddress"))
+        escrow_address = from_str(obj.get("escrowAddress"))
         state = from_str(obj.get("state"))
         amount = from_float(obj.get("amount"))
         available_to_trade = from_float(obj.get("availableToTrade"))
         user_escrow_currency = from_str(obj.get("userEscrowCurrency"))
-        trades = from_list(lambda x: from_str(x), obj.get("trades"))
-        amount_sent_to_reserve = from_float(obj.get("amountSentToUserReserve"))
+        trades = from_list(from_str, obj.get("trades"))
+        amount_sent_to_user_reserve = from_float(obj.get("amountSentToUserReserve"))
         time_created = from_int(obj.get("timeCreated"))
         time_closed = from_int(obj.get("timeClosed"))
-        return APIUserEscrowElement(exch_id, user_escrow_id, escrow_address, state, amount, available_to_trade, user_escrow_currency, trades, amount_sent_to_reserve, time_created, time_closed)
-
+        amount_to_fund = from_float(obj.get("amountToFund"))
+        funding_address = from_str(obj.get("fundingAddress"))
+        return APIUserEscrowElement(exch_id, user_escrow_id, escrow_address, state, amount, available_to_trade, user_escrow_currency, trades, amount_sent_to_user_reserve, time_created, time_closed, amount_to_fund, funding_address)
 
 def api_user_escrow_from_dict(s: Any) -> List[APIUserEscrowElement]:
     return from_list(APIUserEscrowElement.from_dict, s)
@@ -207,16 +212,16 @@ def api_new_user_escrow_response_from_dict(s: Any) -> APINewUserEscrowResponse:
     return APINewUserEscrowResponse.from_dict(s)
 
 class APICloseEscrowResponse:
-    close: bool
+    closed: bool
 
-    def __init__(self, close: bool) -> None:
-        self.close = close
+    def __init__(self, closed: bool) -> None:
+        self.closed = closed
 
     @staticmethod
     def from_dict(obj: Any) -> 'APICloseEscrowResponse':
         assert isinstance(obj, dict)
-        close = from_bool(obj.get("close"))
-        return APICloseEscrowResponse(close)
+        closed = from_bool(obj.get("closed"))
+        return APICloseEscrowResponse(closed)
 
 
 def api_close_escrow_response_from_dict(s: Any) -> APICloseEscrowResponse:
@@ -258,11 +263,11 @@ class APIExchangeEscrowElement:
     available_to_trade: float
     exch_escrow_currency: str
     trades: List[int]
-    amount_sent_to_reserve: float
+    amount_sent_to_user_reserve: float
     time_created: int
     time_closed: int
 
-    def __init__(self, exch_id: str, exch_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, exch_escrow_currency: str, trades: List[int], amount_sent_to_reserve: float, time_created: int, time_closed: int) -> None:
+    def __init__(self, exch_id: str, exch_escrow_id: str, escrow_address: str, state: str, amount: float, available_to_trade: float, exch_escrow_currency: str, trades: List[int], amount_sent_to_user_reserve: float, time_created: int, time_closed: int) -> None:
         self.exch_id = exch_id
         self.exch_escrow_id = exch_escrow_id
         self.escrow_address = escrow_address
@@ -271,7 +276,7 @@ class APIExchangeEscrowElement:
         self.available_to_trade = available_to_trade
         self.exch_escrow_currency = exch_escrow_currency
         self.trades = trades
-        self.amount_sent_to_reserve = amount_sent_to_reserve
+        self.amount_sent_to_user_reserve = amount_sent_to_user_reserve
         self.time_created = time_created
         self.time_closed = time_closed
 
@@ -286,10 +291,10 @@ class APIExchangeEscrowElement:
         available_to_trade = from_float(obj.get("availableToTrade"))
         exch_escrow_currency = from_str(obj.get("exchEscrowCurrency"))
         trades = from_list(lambda x: from_str(x), obj.get("trades"))
-        amount_sent_to_reserve = from_float(obj.get("amountSentToUserReserve"))
+        amount_sent_to_user_reserve = from_float(obj.get("amountSentToUserReserve"))
         time_created = from_int(obj.get("timeCreated"))
         time_closed = from_int(obj.get("timeClosed"))
-        return APIExchangeEscrowElement(exch_id, exch_escrow_id, escrow_address, state, amount, available_to_trade, exch_escrow_currency, trades, amount_sent_to_reserve, time_created, time_closed)
+        return APIExchangeEscrowElement(exch_id, exch_escrow_id, escrow_address, state, amount, available_to_trade, exch_escrow_currency, trades, amount_sent_to_user_reserve, time_created, time_closed)
 
 
 def api_exchange_escrow_from_dict(s: Any) -> List[APIExchangeEscrowElement]:

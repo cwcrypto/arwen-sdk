@@ -34,7 +34,7 @@ class ArwenClient():
         resp = requests.post(f'{self.url}{endpoint}', json=params).text
 
         if(resp == None or resp == ''):
-            raise SystemException("Received null response from arwen-sdk", "")
+            raise SystemException("Received null response from arwen-sdk", resp)
 
         parsedResp = baseResponse.api_base_response_from_dict(json.loads(resp))
 
@@ -176,12 +176,9 @@ class ArwenClient():
         response = self.sendRequest(endpoint, newUserEscrowRequest.to_dict())
         responseObj = apiResponses.api_new_user_escrow_response_from_dict(response)
 
-        userEscrow = UserEscrowDetails()
-
-        queryResponse = self.queryEscrowById(sf.EscrowType.USER, responseObj.user_escrow_id)
-        userEscrow.setFromQuery(queryResponse)
-
-        return userEscrow        
+        userEscrow = self.queryEscrowById(sf.EscrowType.USER, responseObj.user_escrow_id)
+        
+        return userEscrow
 
 
     def closeUserEscrow(self, escrow: UserEscrowDetails) -> bool:
@@ -195,9 +192,7 @@ class ArwenClient():
         request = apiRequests.APICloseUserEscrowRequest(userEscrowId)
         response = self.sendRequest(endpoint, request.to_dict())
 
-        responseOjb = apiResponses.api_close_escrow_response_from_dict(response)
-
-        return responseOjb.close
+        return bool(response)
 
 
     # Exchange Escrow Management
@@ -219,10 +214,7 @@ class ArwenClient():
         
         responseObj = apiResponses.api_new_exchange_escrow_response_from_dict(response)
 
-        exchEscrow = ExchEscrowDetails()
-
-        queryResponse = self.queryEscrowById(sf.EscrowType.EXCH, responseObj.exch_escrow_id)
-        exchEscrow.setFromQuery(queryResponse)
+        exchEscrow = self.queryEscrowById(sf.EscrowType.EXCH, responseObj.exch_escrow_id)
 
         return exchEscrow
 
@@ -258,7 +250,7 @@ class ArwenClient():
 
         responseOjb = apiResponses.api_close_escrow_response_from_dict(response)
 
-        return responseOjb.close
+        return responseOjb.closed
 
 
     def feeHistory(self, startTime: int) -> apiResponses.APIEscrowFeeHistoryResponse:

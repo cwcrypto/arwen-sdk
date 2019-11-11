@@ -7,6 +7,7 @@ from .messages import apiResponses
 
 class UserEscrowDetails(baseDetails.EscrowDetails):
     amountToFund: float
+    fundingAddress: str
     
     def __init__(self):
         self.escrowType = sf.EscrowType.USER
@@ -21,9 +22,11 @@ class UserEscrowDetails(baseDetails.EscrowDetails):
         self.amount = queryResponse.amount
         self.availableToTrade = queryResponse.available_to_trade
         self.trades = queryResponse.trades
-        self.amountSentToUserReserve = queryResponse.amount_sent_to_reserve
+        self.amountSentToUserReserve = queryResponse.amount_sent_to_user_reserve
         self.timeCreated = queryResponse.time_created
         self.timeClosed = queryResponse.time_closed
+        self.amountToFund = queryResponse.amount_to_fund
+        self.fundingAddress = queryResponse.funding_address
 
         return self
 

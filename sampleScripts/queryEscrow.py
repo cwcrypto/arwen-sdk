@@ -61,17 +61,18 @@ escrow = None
 
 if(args.id != None):
     escrow = client.queryEscrowById(sf.EscrowType(args.type), args.id)
-    print(escrow.__dict__)
 
     if(escrow == None):
         print('No escrows fit your query')
         exit(0)
+    else:
+        print(escrow.toString())
 
 else:
     escrow = client.queryEscrows(escrowType=sf.EscrowType(args.type), isFinal=args.open, limit=args.limit, fromTime=args.startTime)
 
-    [print(e.__dict__) for e in escrow]
-
-    if(len(escrow) == 0):
+    if(escrow == None):
         print('No escrows fit your query')
         exit(0)
+    else:
+        [print(e.toString()) for e in escrow]

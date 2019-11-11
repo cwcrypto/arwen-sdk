@@ -41,8 +41,9 @@ escrow = client.queryEscrowById(etype, args.id)
 
 if(escrow == None):
     print(f"No {etype.value} escrow found")
-    exit()
+    exit(0)
 
+print("Escrow to close:")
 print(escrow.toString())
 
 resp = None
@@ -52,4 +53,4 @@ if(escrow.escrowType == sf.EscrowType.USER):
 else:
     resp = client.closeExchEscrowById(args.id)
 
-print(resp)
+print(f'Escrow closed: {resp}')
