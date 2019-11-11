@@ -1,4 +1,4 @@
-TAG=0.19.0
+TAG=0.18.2
 TAG_STRING="${TAG//\./-}"
 
 wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-sdk-beta-testnet-$TAG_STRING.tar
@@ -13,4 +13,4 @@ docker volume create arwen-database
 
 rm arwen-sdk*.tar
 
-docker image ls
+docker image ls | grep $TAG
