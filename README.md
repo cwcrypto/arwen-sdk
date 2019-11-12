@@ -2,7 +2,7 @@
 Python3.6.8 interface example for interacting with Arwen Client. Arwen Client is a dockerized version of the Arwen application that enables users to create escrows and perform atomic swaps programmatically. 
 
 API Documentation and explanation of Arwen:
-https://arwenclient.docs.apiary.io/
+https://arwensdk.docs.apiary.io/
 
 ## What is arwenlib:
 Arwenlib is an example how to build a trading system on top of the Arwen Client. In this repo we have built a library capable of interacting with ArwenClient, it will parse messages and maintain data structures in memory. You can write a trading bot on top of arwenlib if you would like, or implement your own in any language, although arwenlib is by no means meant for production systems. 
