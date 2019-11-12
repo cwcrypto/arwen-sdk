@@ -293,6 +293,9 @@ class ArwenClient():
 
         orderList = [OrderDetails().setFromQuery(responseObj[ii]) for ii in range(len(responseObj))]
 
+        if(len(responseObj) == 0 or responseObj == None):
+            return None
+
         return orderList
 
 
