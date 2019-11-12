@@ -400,7 +400,7 @@ class APIOrderResponseElement:
         user_escrow_id = from_str(obj.get("userEscrowId"))
         exch_escrow_id = from_str(obj.get("exchEscrowId"))
         time_created = from_int(obj.get("timeCreated"))
-        time_closed = from_float(obj.get("timeClosed"))
+        time_closed = from_int(obj.get("timeClosed"))
         return APIOrderResponseElement(order_id, orderType, state, symbol, price, user_escrow_amount, exch_escrow_amount, side, user_escrow_id, exch_escrow_id, time_created, time_closed)
 
 

@@ -44,7 +44,7 @@ if(escrow == None):
     exit(0)
 
 print("Escrow to close:")
-print(escrow.toString())
+print(escrow)
 
 resp = None
 

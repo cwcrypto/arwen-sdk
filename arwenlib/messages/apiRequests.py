@@ -228,9 +228,9 @@ class APINewExchangeEscrowRequest:
     reserve_address: str
     user_escrow_id: str
 
-    def __init__(self, exch_id: str, exch_currency: str, amount: float, expiry_time: int, reserve_address: str, user_escrow_id: str) -> None:
+    def __init__(self, exch_id: str, exch_escrow_currency: str, amount: float, expiry_time: int, reserve_address: str, user_escrow_id: str) -> None:
         self.exch_id = exch_id
-        self.exch_escrow_currency = exch_currency
+        self.exch_escrow_currency = exch_escrow_currency
         self.amount = amount
         self.expiry_time = expiry_time
         self.reserve_address = reserve_address

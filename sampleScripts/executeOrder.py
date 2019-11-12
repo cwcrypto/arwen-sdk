@@ -30,4 +30,4 @@ execute = client.executeById(args.id)
 print(f'executed: {execute}')
 
 order = client.queryOrdersById(args.id)
-print(order.toString())
+print(order)

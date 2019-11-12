@@ -26,19 +26,10 @@ class EscrowDetails:
     def __init__(self):
         pass
 
-    def setFromNewEscrowReq(self, request):
-        if isinstance(request, apiRequests.APINewUserEscrowRequest):
-            self.currency = sf.Blockchain(request.user_escrow_currency)
-            self.amount = request.amount
-            self.availableToTrade = self.amount
-
-        if isinstance(request, apiRequests.APINewExchangeEscrowRequest):
-            self.currency = sf.Blockchain(request.exch_escrow_currency)
-            self.amount = request.amount
-            self.availableToTrade = self.amount
 
     def setFromQuery(self, queryResponse):
         raise NotImplementedError("This is an abstract class, please use User/ExchEscrowDetails classes")
+
 
     def __repr__(self):
         return f'''{self.escrowType} Escrow

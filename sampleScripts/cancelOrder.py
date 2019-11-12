@@ -33,5 +33,5 @@ cancel = client.cancelById(args.id)
 print(f'canceled: {cancel}')
 
 order = client.queryOrdersById(args.id)
-print(order.toString())
+print(order)
 

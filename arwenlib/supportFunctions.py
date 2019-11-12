@@ -65,7 +65,7 @@ class Symbol():
         return Symbol(quote, base)
 
     def __repr__(self):
-        return f'{self.quote.value}{self.separator}{self.base.value}'
+        return f'{self.quote}{self.separator}{self.base}'
 
     def toString(self):
         return self.__repr__()

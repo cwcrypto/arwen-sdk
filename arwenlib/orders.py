@@ -42,6 +42,8 @@ class OrderDetails:
         self.symbol = sf.Symbol.fromString(request.symbol)
         self.timeCreated = int(time())
 
+        return self
+
     def updateOrderFromResponse(self, response: apiResponses.APIPlaceOrderResponse):
         self.orderId = response.order_id
         self.userEscrowAmount = response.sell_amount
@@ -49,7 +51,10 @@ class OrderDetails:
         self.price = response.price
         self.timeExpiry = response.quote_expiry
 
+        return self
+
     def setFromQuery(self, response: apiResponses.APIOrderResponseElement):
+        self.orderId = response.order_id
         self.orderType = sf.OrderType(response.orderType)
         self.state = sf.OrderState(response.state)
         self.symbol = sf.Symbol.fromString(response.symbol)
@@ -62,16 +67,19 @@ class OrderDetails:
         self.timeCreated = response.time_created
         self.timeClosed = response.time_closed
 
+        return self
+
     def __repr__(self):
-        return f'''Order
+        return f'''OrderDetails
                 orderId:        {self.orderId}
                 orderType:      {self.orderType.value}
+                orderState:     {self.state.value}
                 symbol:         {self.symbol}
                 side:           {self.side}
                 exchEscrowId:   {self.exchEscrowId}
                 userEscrowId:   {self.userEscrowId}
                 exchAmount:     {self.exchEscrowAmount}
                 userAmount:     {self.userEscrowAmount}
-                price:          {self.price} {self.symbol.quote.value}/{self.symbol.base.value}
+                price:          {self.price} {self.symbol.quote}/{self.symbol.base}
                 timeCreated:    {self.timeCreated}
                 timeClosed:     {self.timeClosed}'''

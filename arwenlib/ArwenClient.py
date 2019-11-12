@@ -243,7 +243,7 @@ class ArwenClient():
 
     def closeExchEscrowById(self, exchEscrowId: str) -> bool:
 
-        endpoint = '/userescrow/close'
+        endpoint = '/exchescrow/close'
 
         request = apiRequests.APICloseExchangeEscrowRequest(exchEscrowId)
         response = self.sendRequest(endpoint, request.to_dict())
@@ -266,7 +266,15 @@ class ArwenClient():
 
 
     def queryOrdersById(self, orderId: str) -> OrderDetails:
-        return (self.queryOrders(orderId=orderId))[0]
+        if(orderId == None or orderId == ""):
+            raise AttributeError('orderId not set for query by Id')
+
+        orderList = self.queryOrders(orderId=orderId)
+
+        if(len(orderList) == 0):
+            return None
+
+        return orderList[0]
 
 
     def queryOrders(
@@ -309,8 +317,6 @@ class ArwenClient():
         symbol = sf.Symbol(exchEscrow.currency, userEscrow.currency)
 
         request = apiRequests.APIPlaceOrderRequest(sf.OrderType.RFQ.value, symbol.toString(), sf.TimeInForce.FOK.value, None, amount, sf.Side.SELL.value, userEscrow.escrowId, exchEscrow.escrowId)
-        
-        import pdb; pdb.set_trace()
 
         response = self.sendRequest(endpoint, request.to_dict())
         responseObj = apiResponses.api_place_order_response_from_dict(response)
@@ -318,7 +324,7 @@ class ArwenClient():
         order = OrderDetails()
 
         order.updateOrderFromRequest(request)
-        order.updateOrderFromRequest(responseObj)
+        order.updateOrderFromResponse(responseObj)
 
         return order
 

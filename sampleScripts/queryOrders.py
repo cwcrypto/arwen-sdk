@@ -58,8 +58,6 @@ config = c.ArwenConfig()
 configFilePath = '../config.json'
 config.loadConfig(configFilePath)
 
-order = None
-
 if(args.id != None):
     order = client.queryOrdersById(orderId=args.id)
 
