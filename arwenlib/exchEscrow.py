@@ -35,3 +35,7 @@ class ExchEscrowDetails(baseDetails.EscrowDetails):
         self.state = sf.EscrowState.OPENING
 
         return self
+
+    def __repr__(self):
+        return f'''{super().__repr__()}
+                escrowFeePaid: {self.escrowFeePaid}'''

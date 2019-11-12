@@ -9,7 +9,7 @@ class OrderDetails:
     orderId: str
     userEscrowId: str
     exchEscrowId: str
-    ordertype: sf.OrderType
+    orderType: sf.OrderType
     side: sf.Side
     symbol: sf.Symbol
     exchEscrowAmount: float
@@ -24,7 +24,7 @@ class OrderDetails:
         self.orderId = None
         self.userEscrowId = None
         self.exchEscrowId = None
-        self.ordertype = sf.OrderType.RFQ
+        self.orderType = sf.OrderType.RFQ
         self.side = None
         self.symbol = None
         self.exchEscrowAmount = None
@@ -50,7 +50,7 @@ class OrderDetails:
         self.timeExpiry = response.quote_expiry
 
     def setFromQuery(self, response: apiResponses.APIOrderResponseElement):
-        self.ordertype = sf.OrderType(response.orderType)
+        self.orderType = sf.OrderType(response.orderType)
         self.state = sf.OrderState(response.state)
         self.symbol = sf.Symbol.fromString(response.symbol)
         self.exchEscrowAmount = response.exch_escrow_amount
@@ -62,5 +62,16 @@ class OrderDetails:
         self.timeCreated = response.time_created
         self.timeClosed = response.time_closed
 
-    def toString(self):
-        return self.__dict__
+    def __repr__(self):
+        return f'''Order
+                orderId:        {self.orderId}
+                orderType:      {self.orderType.value}
+                symbol:         {self.symbol}
+                side:           {self.side}
+                exchEscrowId:   {self.exchEscrowId}
+                userEscrowId:   {self.userEscrowId}
+                exchAmount:     {self.exchEscrowAmount}
+                userAmount:     {self.userEscrowAmount}
+                price:          {self.price} {self.symbol.quote.value}/{self.symbol.base.value}
+                timeCreated:    {self.timeCreated}
+                timeClosed:     {self.timeClosed}'''

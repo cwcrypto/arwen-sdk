@@ -6,11 +6,10 @@ __all__ = [
     'ArwenClient',
     'baseEscrowDetails',
     'constants',
-    'escrowRequests',
+    'exceptions',
     'exchEscrow',
     'orders',
     'supportFunctions',
-    'transactions',
     'userEscrow'
     ]
 

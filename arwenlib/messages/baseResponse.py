@@ -1,11 +1,3 @@
-# To use this code, make sure you
-#
-#     import json
-#
-# and then, to convert JSON from a string, do
-#
-#     result = api_base_response_from_dict(json.loads(json_string))
-
 from typing import List, Any, TypeVar, Callable, Type, cast
 
 

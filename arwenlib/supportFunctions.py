@@ -55,8 +55,8 @@ class OrderState(enum.Enum):
 
 class Symbol(): 
     def __init__(self, quoteCurrency: Blockchain, baseCurrency: Blockchain):
-        self.quote = quoteCurrency # should be Blockchain
-        self.base = baseCurrency # should be Blockchain
+        self.quote = quoteCurrency
+        self.base = baseCurrency
         self.separator = '-'
 
     @staticmethod
@@ -64,8 +64,11 @@ class Symbol():
         quote, base = sym.split('-')
         return Symbol(quote, base)
 
-    def toString(self):
+    def __repr__(self):
         return f'{self.quote.value}{self.separator}{self.base.value}'
+
+    def toString(self):
+        return self.__repr__()
 
 
 def generateEscrowTimelock(days: float):

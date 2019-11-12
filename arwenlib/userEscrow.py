@@ -37,3 +37,8 @@ class UserEscrowDetails(baseDetails.EscrowDetails):
         self.state = sf.EscrowState.OPENING
 
         return self
+
+    def __repr__(self):
+        return f'''{super().__repr__()}
+                fundingAddress: {self.fundingAddress}
+                fundingAmount:  {self.amountToFund}'''

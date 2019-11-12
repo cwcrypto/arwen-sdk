@@ -40,8 +40,19 @@ class EscrowDetails:
     def setFromQuery(self, queryResponse):
         raise NotImplementedError("This is an abstract class, please use User/ExchEscrowDetails classes")
 
-    def toString(self):
-        return str(self.__dict__)
+    def __repr__(self):
+        return f'''{self.escrowType} Escrow
+                exchId:         {self.exchId}
+                {self.escrowType.value}EscrowId:   {self.escrowId}
+                escrowAddress:  {self.escrowAddress}
+                escrowState:    {self.state}
+                escrowCurrency: {self.currency}
+                totalAmount:    {self.amount}
+                tradableAmount: {self.availableToTrade}
+                trades:         {self.trades}
+                sentToYou:      {self.amountSentToUserReserve}
+                timeCreated:    {self.timeCreated}
+                timeClosed:     {self.timeClosed}'''
 
 class FiltersRequest:
     def __init__(self):
@@ -59,3 +70,5 @@ class FiltersRequest:
 
     def getFilter(self):
         return self.params
+
+    
