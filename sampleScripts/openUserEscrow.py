@@ -61,7 +61,7 @@ newUE = client.createNewUserEscrow(
     amount=args.quantity)
 
 print(f'escrowId:           {newUE.escrowId}')
-print(f'fudingAddress:      {newUE.escrowAddress}')
+print(f'fudingAddress:      {newUE.fundingAddress}')
 print(f'amountToFund:       {newUE.amountToFund}')
 
 sf.waitForEscowToOpen(newUE, client)
