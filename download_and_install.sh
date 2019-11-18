@@ -1,4 +1,4 @@
-TAG=0.18.2
+TAG=0.20.7
 TAG_STRING="${TAG//\./-}"
 
 wget https://cwc-trading-app-releases.s3.amazonaws.com/arwen-sdk-beta-testnet-$TAG_STRING.tar
