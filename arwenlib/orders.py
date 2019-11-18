@@ -80,6 +80,6 @@ class OrderDetails:
                 userEscrowId:   {self.userEscrowId}
                 exchAmount:     {self.exchEscrowAmount}
                 userAmount:     {self.userEscrowAmount}
-                price:          {self.price} {self.symbol.quote}/{self.symbol.base}
+                price:          {self.price} {self.symbol.quote.value}/{self.symbol.base.value} (LOCAL ESTIMATE)
                 timeCreated:    {self.timeCreated}
                 timeClosed:     {self.timeClosed}'''
