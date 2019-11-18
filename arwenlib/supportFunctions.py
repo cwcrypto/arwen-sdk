@@ -106,10 +106,10 @@ class Symbol():
     @staticmethod
     def fromString(sym):
         quote, base = sym.split('-')
-        return Symbol(quote, base)
+        return Symbol(Blockchain(quote), Blockchain(base))
 
     def __repr__(self):
-        return f'{self.quote}{self.separator}{self.base}'
+        return f'{self.quote.value}{self.separator}{self.base.value}'
 
     def toString(self):
         return self.__repr__()
