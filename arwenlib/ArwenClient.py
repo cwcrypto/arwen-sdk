@@ -191,8 +191,10 @@ class ArwenClient():
 
         request = apiRequests.APICloseUserEscrowRequest(userEscrowId)
         response = self.sendRequest(endpoint, request.to_dict())
+        
+        responseObj = apiResponses.api_close_escrow_response_from_dict(response)
 
-        return bool(response)
+        return responseObj.closed
 
 
     # Exchange Escrow Management
