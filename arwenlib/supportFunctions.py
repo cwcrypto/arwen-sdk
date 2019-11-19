@@ -91,11 +91,15 @@ class EscrowState(enum.Enum):
     UNKNOWN = 'UNKNOWN'
 
 class OrderState(enum.Enum):
-    OPEN = 'OPEN'
+    PENDING_QUOTE = 'PENDING_QUOTE'
+    QUOTED = 'QUOTED' 
+    CANCELED = 'CANCELED'
+    QUOTE_EXPIRED = 'QUOTE_EXPIRED'
+    PENDING_EXECUTION = 'PENDING_EXECUTION'
+    PENDING_REPRICE = 'PENDING_REPRICE'
     EXECUTED = 'EXECUTED'
-    CANCELLED = 'CANCELLED'
-    EXPIRED = 'EXPIRED'
-    UNKNOWN = 'UNKNOWN'
+    REPRICE_QUOTE = 'REPRICE_QUOTE'
+    ABORTED = 'ABORTED'
 
 class Symbol(): 
     def __init__(self, quoteCurrency: Blockchain, baseCurrency: Blockchain):
